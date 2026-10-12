@@ -1,59 +1,72 @@
-# Flyweight
+# Patrón Flyweight · Mapa de sillas de un estadio
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.2.11.
+Aplicación Angular (solo frontend) que muestra, con un caso de la vida real, el problema que resuelve el
+patrón de diseño [Flyweight](https://refactoring.guru/es/design-patterns/flyweight) y mide la diferencia
+antes y después de aplicarlo.
 
-## Development server
+## El problema
 
-To start a local development server, run:
+Una boletería muestra el mapa de un estadio con hasta **100.000 sillas**. Cada silla pertenece a una de
+**6 localidades** (Palco, VIP, Preferencial, Occidental, Oriental y General), y todas las sillas de una
+localidad comparten el mismo precio, color, beneficios, términos y condiciones (~2 KB) e icono.
+
+| Ruta       | Versión           | Qué guarda cada silla                                           |
+| ---------- | ----------------- | --------------------------------------------------------------- |
+| `/antes`   | ❌ Sin Flyweight  | Sus datos **y su propia copia** de la localidad y del icono     |
+| `/despues` | ✅ Con Flyweight  | Solo sus datos y una **referencia** a la localidad compartida   |
+
+## Resultados medidos (Chrome, pestaña recién cargada)
+
+| Sillas  | Versión       | Crear objetos | Dibujar | Copias de localidad | Memoria estimada |
+| ------- | ------------- | ------------- | ------- | ------------------- | ---------------- |
+| 10.000  | Sin Flyweight | 1,1 s         | 218 ms  | 10.000              | 68 MB            |
+| 10.000  | Con Flyweight | 5 ms          | 62 ms   | 6                   | 1 MB             |
+| 50.000  | Sin Flyweight | 8,4 s         | 1,1 s   | 50.000              | 342 MB           |
+| 50.000  | Con Flyweight | 25 ms         | 317 ms  | 6                   | 4,8 MB           |
+| 100.000 | Sin Flyweight | 36 s          | 4–18 s  | 100.000             | 683 MB           |
+| 100.000 | Con Flyweight | 33 ms         | 601 ms  | 6                   | 9,5 MB           |
+
+Los tiempos varían según el equipo y la memoria ocupada; la app los mide en cada ejecución.
+
+## Cómo se aplica el patrón
+
+| Parte del patrón | Clase                                                             | Responsabilidad                                         |
+| ---------------- | ----------------------------------------------------------------- | ------------------------------------------------------- |
+| Flyweight        | [`Localidad`](src/app/despues/localidad.ts)                        | Estado intrínseco compartido e inmutable (datos + icono) |
+| Contexto         | [`Silla`](src/app/despues/silla.ts)                                | Estado extrínseco: sección, fila, número, posición, estado |
+| Fábrica          | [`LocalidadFactory`](src/app/despues/localidad.factory.ts)         | Caché (`Map`) que devuelve siempre la misma instancia   |
+| Cliente          | [`EstadioConFlyweight`](src/app/despues/estadio-con-flyweight.ts)  | Construye y dibuja el mapa                               |
+
+La versión sin el patrón está en [`src/app/antes/`](src/app/antes/). Ambas implementan el mismo
+contrato [`MapaDeSillas`](src/app/core/models/mapa-de-sillas.ts), así que la interfaz las dibuja y mide
+exactamente igual.
+
+## Medición
+
+[`BenchmarkService`](src/app/core/services/benchmark.service.ts) ejecuta tres pasos (cargar datos, crear
+objetos y dibujar el mapa). Cada uno se mide con `console.time` / `console.timeEnd`, que deja el registro
+en la consola de DevTools, y con `performance.now()`, que entrega el número para mostrarlo en pantalla.
+Los resultados se guardan en `sessionStorage` para comparar las dos rutas aunque se recargue la pestaña.
+
+La **memoria estimada** se calcula a partir de los datos que guarda cada versión
+([`memoria.ts`](src/app/core/utils/memoria.ts)). El heap de `performance.memory` solo existe en Chrome y
+Edge y se muestra únicamente como referencia.
+
+## Datos
+
+No hay backend. La "base de datos" está en [`src/app/core/data/`](src/app/core/data/): las 6 localidades,
+el evento y un generador de sillas con semilla fija, que produce siempre las mismas sillas para que la
+comparación sea justa.
+
+## Tecnologías
+
+Angular 19 (componentes standalone, signals y rutas con carga diferida), Tailwind CSS 4 y Canvas 2D.
+
+## Comandos
 
 ```bash
-ng serve
+npm install
+npm start        # http://localhost:4200
+npm test         # pruebas unitarias (Karma + Jasmine)
+npm run build    # build de producción en dist/
 ```
-
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
-
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
-
-```bash
-ng generate component component-name
-```
-
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
-
-```bash
-ng generate --help
-```
-
-## Building
-
-To build the project run:
-
-```bash
-ng build
-```
-
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
