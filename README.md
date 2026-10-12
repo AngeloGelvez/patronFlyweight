@@ -1,66 +1,92 @@
-# Patrón Flyweight · Mapa de sillas de un estadio
+# Patrón Flyweight · Boletería del Estadio Metropolitano
 
-Aplicación Angular (solo frontend) que muestra, con un caso de la vida real, el problema que resuelve el
-patrón de diseño [Flyweight](https://refactoring.guru/es/design-patterns/flyweight) y mide la diferencia
-antes y después de aplicarlo.
+Aplicación Angular (solo frontend) que simula el sitio web de un estadio donde una persona compra su
+boleta: elige su silla en el mapa, ve **cómo se ve la cancha desde esa zona**, llena sus datos, paga
+(simulado) y recibe su boleta. Por dentro, el sitio puede funcionar **sin** o **con** el patrón de diseño
+[Flyweight](https://refactoring.guru/es/design-patterns/flyweight), y un panel mide la diferencia.
+
+> El estadio, el evento, los precios y las sillas son ficticios. No se realizan compras ni cobros.
+
+## Cómo se usa
+
+1. La **barra amarilla superior** es de la demostración: elige **Sin Flyweight** (`/antes`) o
+   **Con Flyweight** (`/despues`) y el aforo (10.000 a 100.000 sillas). Cambiar de versión recarga la
+   página para medir siempre con la memoria limpia; la compra en curso se conserva.
+2. El resto es el sitio: **Elige tu silla → Tus datos → Pago → Tu boleta**.
+3. Al seleccionar una silla aparece la **vista previa** de la cancha desde su zona.
+4. El **panel de rendimiento** (al final, o «Ver rendimiento ↓») muestra las métricas y la comparación.
 
 ## El problema
 
-Una boletería muestra el mapa de un estadio con hasta **100.000 sillas**. Cada silla pertenece a una de
-**6 localidades** (Palco, VIP, Preferencial, Occidental, Oriental y General), y todas las sillas de una
-localidad comparten el mismo precio, color, beneficios, términos y condiciones (~2 KB) e icono.
+Cada silla tiene datos propios (sección, fila, número, posición, estado) y datos que comparte con muchas
+otras:
 
-| Ruta       | Versión           | Qué guarda cada silla                                           |
-| ---------- | ----------------- | --------------------------------------------------------------- |
-| `/antes`   | ❌ Sin Flyweight  | Sus datos **y su propia copia** de la localidad y del icono     |
-| `/despues` | ✅ Con Flyweight  | Solo sus datos y una **referencia** a la localidad compartida   |
+| Dato compartido                                   | Compartido por            | Cantidad |
+| ------------------------------------------------- | ------------------------- | -------- |
+| Precio, beneficios, ~2 KB de términos e icono     | Todas las sillas de una **localidad** | 6        |
+| Vista previa de la cancha (imagen de 800 × 450)   | Todas las sillas de una **zona**       | 7        |
 
-## Resultados medidos (Chrome, pestaña recién cargada)
+| Versión           | Qué guarda cada silla                                                                |
+| ----------------- | ------------------------------------------------------------------------------------ |
+| ❌ Sin Flyweight  | Su propia copia de la localidad, su propio icono y, al seleccionarla, su propia vista |
+| ✅ Con Flyweight  | Solo sus datos y referencias a la localidad y a la vista compartidas                  |
 
-| Sillas  | Versión       | Crear objetos | Dibujar | Copias de localidad | Memoria estimada |
-| ------- | ------------- | ------------- | ------- | ------------------- | ---------------- |
-| 10.000  | Sin Flyweight | 1,1 s         | 218 ms  | 10.000              | 68 MB            |
-| 10.000  | Con Flyweight | 5 ms          | 62 ms   | 6                   | 1 MB             |
-| 50.000  | Sin Flyweight | 8,4 s         | 1,1 s   | 50.000              | 342 MB           |
-| 50.000  | Con Flyweight | 25 ms         | 317 ms  | 6                   | 4,8 MB           |
-| 100.000 | Sin Flyweight | 36 s          | 4–18 s  | 100.000             | 683 MB           |
-| 100.000 | Con Flyweight | 33 ms         | 601 ms  | 6                   | 9,5 MB           |
+Las zonas con vista propia son General Norte, General Sur, Oriental, Occidental, Preferencial, VIP y
+Palco. Cada vista se dibuja en 3D con Canvas (cancha, líneas, arcos, graderías con los colores de cada
+localidad, público y reflectores) sin usar imágenes externas.
 
-Los tiempos varían según el equipo y la memoria ocupada; la app los mide en cada ejecución.
+## Resultados medidos (Chrome, página recién cargada)
+
+| Sillas  | Versión       | Crear objetos | Dibujar | Copias de localidad | Memoria estimada del mapa |
+| ------- | ------------- | ------------- | ------- | ------------------- | ------------------------- |
+| 10.000  | Sin Flyweight | 1,1 s         | 218 ms  | 10.000              | 68 MB                     |
+| 10.000  | Con Flyweight | 5 ms          | 62 ms   | 6                   | 1 MB                      |
+| 50.000  | Sin Flyweight | 8,4 s         | 1,1 s   | 50.000              | 342 MB                    |
+| 50.000  | Con Flyweight | 25 ms         | 317 ms  | 6                   | 4,8 MB                    |
+| 100.000 | Sin Flyweight | 36 s          | 4–18 s  | 100.000             | 683 MB                    |
+| 100.000 | Con Flyweight | 33 ms         | 601 ms  | 6                   | 9,5 MB                    |
+
+Vistas previas al seleccionar 4 sillas VIP:
+
+| Versión       | Vistas dibujadas | Tiempo por vista               | Memoria de vistas |
+| ------------- | ---------------- | ------------------------------ | ----------------- |
+| Sin Flyweight | 4                | 15–30 ms cada una              | 5,5 MB            |
+| Con Flyweight | 1                | 42 ms la primera, 0 ms después | 1,4 MB            |
+
+Los tiempos varían según el equipo; la app los mide en cada carga.
 
 ## Cómo se aplica el patrón
 
-| Parte del patrón | Clase                                                             | Responsabilidad                                         |
-| ---------------- | ----------------------------------------------------------------- | ------------------------------------------------------- |
-| Flyweight        | [`Localidad`](src/app/despues/localidad.ts)                        | Estado intrínseco compartido e inmutable (datos + icono) |
-| Contexto         | [`Silla`](src/app/despues/silla.ts)                                | Estado extrínseco: sección, fila, número, posición, estado |
-| Fábrica          | [`LocalidadFactory`](src/app/despues/localidad.factory.ts)         | Caché (`Map`) que devuelve siempre la misma instancia   |
-| Cliente          | [`EstadioConFlyweight`](src/app/despues/estadio-con-flyweight.ts)  | Construye y dibuja el mapa                               |
+| Parte del patrón | Clase                                                                                                        | Responsabilidad                                            |
+| ---------------- | ------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------- |
+| Flyweight        | [`Localidad`](src/app/despues/localidad.ts) y la vista de cada zona                                           | Estado intrínseco compartido e inmutable                   |
+| Contexto         | [`Silla`](src/app/despues/silla.ts)                                                                           | Estado extrínseco: zona, sección, fila, número, posición, estado |
+| Fábricas         | [`LocalidadFactory`](src/app/despues/localidad.factory.ts), [`VistaPreviaFactory`](src/app/despues/vista-previa.factory.ts) | Caché (`Map`) que devuelve siempre la misma instancia      |
+| Cliente          | [`EstadioConFlyweight`](src/app/despues/estadio-con-flyweight.ts)                                             | Construye el mapa y entrega las vistas                     |
 
-La versión sin el patrón está en [`src/app/antes/`](src/app/antes/). Ambas implementan el mismo
-contrato [`MapaDeSillas`](src/app/core/models/mapa-de-sillas.ts), así que la interfaz las dibuja y mide
-exactamente igual.
+La versión sin el patrón está en [`src/app/antes/`](src/app/antes/). Ambas implementan el mismo contrato
+[`MapaDeSillas`](src/app/core/models/mapa-de-sillas.ts), así que el sitio las usa y mide exactamente igual.
 
 ## Medición
 
-[`BenchmarkService`](src/app/core/services/benchmark.service.ts) ejecuta tres pasos (cargar datos, crear
-objetos y dibujar el mapa). Cada uno se mide con `console.time` / `console.timeEnd`, que deja el registro
-en la consola de DevTools, y con `performance.now()`, que entrega el número para mostrarlo en pantalla.
-Los resultados se guardan en `sessionStorage` para comparar las dos rutas aunque se recargue la pestaña.
+[`BenchmarkService`](src/app/core/services/benchmark.service.ts) mide la carga del mapa en tres pasos (leer
+datos, crear objetos y dibujar) y cada vista previa. Cada medición usa `console.time` / `console.timeEnd`,
+que deja el registro en la consola de DevTools, y `performance.now()`, que entrega el número para el panel.
+Los resultados, el aforo y la compra en curso se guardan en `sessionStorage`.
 
 La **memoria estimada** se calcula a partir de los datos que guarda cada versión
-([`memoria.ts`](src/app/core/utils/memoria.ts)). El heap de `performance.memory` solo existe en Chrome y
-Edge y se muestra únicamente como referencia.
+([`memoria.ts`](src/app/core/utils/memoria.ts)): textos, números y píxeles de iconos y vistas.
 
 ## Datos
 
-No hay backend. La "base de datos" está en [`src/app/core/data/`](src/app/core/data/): las 6 localidades,
-el evento y un generador de sillas con semilla fija, que produce siempre las mismas sillas para que la
+No hay backend. La "base de datos" está en [`src/app/core/data/`](src/app/core/data/): localidades, zonas,
+evento y un generador de sillas con semilla fija, que produce siempre las mismas sillas para que la
 comparación sea justa.
 
 ## Tecnologías
 
-Angular 19 (componentes standalone, signals y rutas con carga diferida), Tailwind CSS 4 y Canvas 2D.
+Angular 19 (componentes standalone, signals, formularios reactivos y rutas con carga diferida),
+Tailwind CSS 4 y Canvas 2D.
 
 ## Comandos
 

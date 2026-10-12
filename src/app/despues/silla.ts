@@ -1,4 +1,5 @@
 import { EstadoSilla, SillaRegistro, Tribuna } from '../core/data/estadio.generator';
+import { ZonaId } from '../core/data/zonas.db';
 import { DetalleSilla } from '../core/models/mapa-de-sillas';
 import { bytesDeUbicacion } from '../core/utils/memoria';
 import { Localidad } from './localidad';
@@ -16,6 +17,7 @@ const BYTES_POR_REFERENCIA = 8;
 export class Silla {
   readonly id: string;
   readonly tribuna: Tribuna;
+  readonly zona: ZonaId;
   readonly seccion: string;
   readonly fila: number;
   readonly numero: number;
@@ -29,6 +31,7 @@ export class Silla {
   ) {
     this.id = registro.id;
     this.tribuna = registro.tribuna;
+    this.zona = registro.zona;
     this.seccion = registro.seccion;
     this.fila = registro.fila;
     this.numero = registro.numero;
@@ -46,6 +49,7 @@ export class Silla {
     return {
       id: this.id,
       tribuna: this.tribuna,
+      zona: this.zona,
       seccion: this.seccion,
       fila: this.fila,
       numero: this.numero,

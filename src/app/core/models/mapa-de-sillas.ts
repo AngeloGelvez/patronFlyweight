@@ -1,5 +1,7 @@
 import { EstadioGenerado, EstadoSilla, Tribuna } from '../data/estadio.generator';
 import { LocalidadId } from '../data/localidades.db';
+import { ZonaId } from '../data/zonas.db';
+import { Lienzo } from '../render/icono-silla';
 
 /**
  * Contrato común de las dos versiones del mapa (sin y con Flyweight).
@@ -15,16 +17,23 @@ export interface MapaDeSillas {
   /** Dibuja todas las sillas usando coordenadas del plano del estadio. */
   dibujar(ctx: CanvasRenderingContext2D): void;
 
-  /** Devuelve la silla que está en (x, y), o `null` si no hay ninguna. */
-  buscarSilla(x: number, y: number): DetalleSilla | null;
+  /** Selecciona la silla que está en (x, y), o `null` si no hay ninguna. */
+  seleccionarSilla(x: number, y: number): SillaSeleccionada | null;
 
   estadisticas(): EstadisticasMapa;
 }
 
-/** Información que se muestra al hacer clic en una silla. */
+export interface SillaSeleccionada {
+  readonly detalle: DetalleSilla;
+  /** Imagen de la cancha vista desde la zona de la silla. */
+  obtenerVista(): Lienzo;
+}
+
+/** Información que se muestra al seleccionar una silla. */
 export interface DetalleSilla {
   readonly id: string;
   readonly tribuna: Tribuna;
+  readonly zona: ZonaId;
   readonly seccion: string;
   readonly fila: number;
   readonly numero: number;
@@ -49,6 +58,8 @@ export interface EstadisticasMapa {
   readonly copiasDeLocalidad: number;
   /** Cuántos iconos de silla se renderizaron. */
   readonly iconos: number;
+  /** Cuántas vistas previas de la cancha existen en memoria. */
+  readonly vistasRenderizadas: number;
   /** Estimación de la memoria que ocupan los datos (ver `memoria.ts`). */
   readonly memoriaEstimadaBytes: number;
 }

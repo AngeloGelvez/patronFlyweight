@@ -15,10 +15,10 @@ export interface PuntoPlano {
   readonly y: number;
 }
 
-const COLOR_FONDO = '#0b1220';
-const COLOR_GRADERIA = '#131c31';
-const COLOR_CANCHA = '#14532d';
-const COLOR_LINEAS = 'rgba(255, 255, 255, 0.35)';
+const COLOR_FONDO = '#ffffff';
+const COLOR_GRADERIA = '#e9eef5';
+const COLOR_CANCHA = '#3f8f46';
+const COLOR_LINEAS = 'rgba(255, 255, 255, 0.85)';
 
 /**
  * Etiquetas de cada zona, dibujadas encima de las sillas. Son la segunda forma
@@ -42,7 +42,7 @@ const ETIQUETAS_ZONAS: readonly { texto: string; x: number; y: number }[] = [
   selector: 'app-mapa-estadio',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <div class="relative overflow-hidden rounded-xl bg-[#0b1220] ring-1 ring-white/10">
+    <div class="relative overflow-hidden rounded-xl bg-white ring-1 ring-slate-200">
       <canvas
         #lienzo
         [width]="ancho"
@@ -56,7 +56,7 @@ const ETIQUETAS_ZONAS: readonly { texto: string; x: number; y: number }[] = [
       @if (resaltado(); as punto) {
         <span
           aria-hidden="true"
-          class="pointer-events-none absolute size-5 -translate-x-1/2 -translate-y-1/2 rounded-full ring-2 ring-white shadow-[0_0_0_4px_rgba(0,0,0,0.65)]"
+          class="pointer-events-none absolute size-5 -translate-x-1/2 -translate-y-1/2 rounded-full ring-[3px] ring-slate-900 shadow-[0_0_0_3px_rgba(255,255,255,0.95)]"
           [style.left.%]="(punto.x / ancho) * 100"
           [style.top.%]="(punto.y / alto) * 100"
         ></span>
@@ -171,11 +171,11 @@ function dibujarEtiquetas(ctx: CanvasRenderingContext2D): void {
 
   for (const { texto, x, y } of ETIQUETAS_ZONAS) {
     const ancho = ctx.measureText(texto).width + 20;
-    ctx.fillStyle = 'rgba(11, 18, 32, 0.85)';
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.92)';
     ctx.beginPath();
     ctx.roundRect(x - ancho / 2, y - 20, ancho, 40, 10);
     ctx.fill();
-    ctx.fillStyle = '#f8fafc';
+    ctx.fillStyle = '#0f172a';
     ctx.fillText(texto, x, y + 1);
   }
 }

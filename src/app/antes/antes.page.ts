@@ -1,88 +1,65 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { RouterLink } from '@angular/router';
 import { EstadioGenerado } from '../core/data/estadio.generator';
 import { MapaDeSillas } from '../core/models/mapa-de-sillas';
-import { ComparacionResultadosComponent } from '../shared/components/comparacion-resultados/comparacion-resultados.component';
-import { LaboratorioMapaComponent } from '../shared/components/laboratorio-mapa/laboratorio-mapa.component';
+import { BoleteriaComponent } from '../shared/components/boleteria/boleteria.component';
 import { EstadioSinFlyweight } from './estadio-sin-flyweight';
 
 const CODIGO = `class SillaPesada {
   // Datos propios de la silla
-  id; seccion; fila; numero; x; y; estado;
+  id; zona; seccion; fila; numero; x; y; estado;
 
   // ❌ Repetidos en cada silla
   localidad;  // precio, beneficios, ~2 KB de términos
   icono;      // lienzo de 24 × 24 px
+  vista;      // imagen de 800 × 450 px de la cancha
 
-  constructor(registro, localidad) {
-    // ...
-    this.localidad = localidad;          // copia propia (llega del API)
-    this.icono = crearIconoSilla(color); // se dibuja otra vez
+  obtenerVista() {
+    // Cada silla dibuja su propia vista,
+    // aunque toda su zona vea la cancha igual.
+    this.vista ??= renderizarVistaCancha(this.zona);
+    return this.vista;
   }
 }`;
 
 @Component({
   selector: 'app-antes-page',
-  imports: [RouterLink, LaboratorioMapaComponent, ComparacionResultadosComponent],
+  imports: [BoleteriaComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <div class="space-y-8">
-      <header class="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
-        <div class="max-w-3xl">
-          <p class="text-sm font-semibold text-antes">Versión 1 de 2 · Sin el patrón</p>
-          <h1 class="mt-1 text-3xl font-bold tracking-tight text-white sm:text-4xl">
-            Mapa de sillas sin Flyweight
-          </h1>
-          <p class="mt-3 text-slate-300">
-            Así se haría de la forma directa: cada silla es un objeto que guarda
-            <strong class="text-white">su propia copia</strong> de la localidad (precio, beneficios y
-            términos) y <strong class="text-white">su propio icono</strong>. Solo hay 6 localidades,
-            pero con 100.000 sillas se crean 100.000 copias de todo.
-          </p>
-        </div>
-        <a
-          routerLink="/despues"
-          class="inline-flex shrink-0 items-center justify-center gap-2 rounded-lg bg-despues px-5 py-3 text-sm font-semibold text-slate-950 transition hover:brightness-110 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
-        >
-          Ver versión con Flyweight <span aria-hidden="true">→</span>
-        </a>
-      </header>
-
-      <app-laboratorio-mapa version="antes" [crearMapa]="crearMapa" />
-
-      <section aria-labelledby="titulo-problema" class="grid grid-cols-1 gap-6 rounded-2xl bg-slate-900 p-5 ring-1 ring-white/10 sm:p-6 lg:grid-cols-2">
+    <app-boleteria version="antes" [crearMapa]="crearMapa">
+      <section aria-labelledby="titulo-problema" class="grid grid-cols-1 gap-6 rounded-2xl bg-white p-5 shadow-sm ring-1 ring-slate-200 sm:p-6 lg:grid-cols-2">
         <div>
-          <h2 id="titulo-problema" class="text-lg font-semibold text-white">¿Cuál es el problema?</h2>
-          <p class="mt-2 text-sm text-slate-300">
-            Los datos de una silla se dividen en dos tipos, pero aquí se guardan juntos:
+          <h3 id="titulo-problema" class="text-lg font-semibold text-slate-900">¿Cuál es el problema sin Flyweight?</h3>
+          <p class="mt-2 text-sm text-slate-700">
+            Los datos de una silla son de dos tipos, pero aquí se guardan juntos en cada objeto:
           </p>
-          <ul class="mt-3 space-y-2 text-sm text-slate-300">
+          <ul class="mt-3 space-y-2 text-sm text-slate-700">
             <li>
-              <strong class="text-white">Propios de cada silla</strong> (estado extrínseco): sección,
+              <strong class="text-slate-900">Propios de cada silla</strong> (estado extrínseco): sección,
               fila, número, posición y estado. Cambian de una silla a otra.
             </li>
             <li>
-              <strong class="text-white">Iguales para toda la localidad</strong> (estado intrínseco):
-              precio, color, beneficios, términos y el icono. Se repiten miles de veces.
+              <strong class="text-slate-900">Iguales para muchas sillas</strong> (estado intrínseco):
+              precio, beneficios, términos e icono (iguales en toda la localidad) y la vista de la
+              cancha (igual en toda la zona). Se repiten miles de veces.
             </li>
           </ul>
-          <div class="mt-4 rounded-xl bg-white/5 p-4 text-sm">
-            <p class="font-mono text-slate-200">100.000 sillas × (≈ 4,4 KB de localidad + 2,3 KB de icono)</p>
-            <p class="mt-1 font-mono text-white">≈ 680 MB solo en datos repetidos</p>
+          <div class="mt-4 rounded-xl bg-slate-50 p-4 text-sm ring-1 ring-slate-200">
+            <p class="font-mono text-slate-700">100.000 sillas × (≈ 4,4 KB de localidad + 2,3 KB de icono)</p>
+            <p class="mt-1 font-mono font-semibold text-slate-900">≈ 680 MB solo en datos repetidos</p>
+            <p class="mt-2 font-mono text-slate-700">+ 1,4 MB por cada silla que el usuario selecciona</p>
           </div>
-          <p class="mt-4 text-sm text-slate-300">
-            Además, dibujar 100.000 iconos distintos es lento, porque el navegador tiene que tratar
-            cada uno como una imagen diferente.
+          <p class="mt-4 text-sm text-slate-700">
+            Prueba a seleccionar varias sillas de la misma zona: cada una vuelve a dibujar la misma
+            vista de la cancha. Mira «Vistas previas dibujadas» en el panel.
           </p>
         </div>
         <div>
-          <p class="text-xs font-medium uppercase tracking-wide text-slate-400">antes/silla-pesada.ts (resumido)</p>
-          <pre class="mt-2 overflow-x-auto rounded-xl bg-slate-950 p-4 text-xs leading-relaxed text-slate-200 ring-1 ring-white/10"><code>{{ codigo }}</code></pre>
+          <p class="text-xs font-medium uppercase tracking-wide text-slate-500">antes/silla-pesada.ts (resumido)</p>
+          <pre class="mt-2 overflow-x-auto rounded-xl bg-slate-900 p-4 text-xs leading-relaxed text-slate-100"><code>{{ codigo }}</code></pre>
         </div>
       </section>
-
-      <app-comparacion-resultados />
-    </div>
+    </app-boleteria>
   `,
 })
 export class AntesPage {

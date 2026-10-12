@@ -1,60 +1,49 @@
 <a
   href="#contenido"
   (click)="saltarAlContenido($event, contenido)"
-  class="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-lg focus:bg-white focus:px-4 focus:py-2 focus:text-slate-950"
+  class="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-lg focus:bg-slate-900 focus:px-4 focus:py-2 focus:text-white"
 >
   Saltar al contenido
 </a>
 
-<header class="sticky top-0 z-20 border-b border-white/10 bg-slate-950/85 backdrop-blur">
-  <div class="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3 px-4 py-3">
-    <a routerLink="/" class="flex items-center gap-2 font-semibold text-white">
-      <span aria-hidden="true" class="grid size-8 place-items-center rounded-lg bg-white/10">🎟️</span>
-      <span>Boletería <span class="font-normal text-slate-400">· Patrón Flyweight</span></span>
-    </a>
+<div class="no-imprimir top-0 z-20 sm:sticky">
+  <app-barra-demo />
 
-    <nav aria-label="Versiones del mapa">
-      <ul class="flex rounded-lg bg-white/5 p-1 text-sm">
-        <li>
-          <a
-            routerLink="/antes"
-            routerLinkActive="bg-white/10 !text-white"
-            ariaCurrentWhenActive="page"
-            class="flex items-center gap-2 rounded-md px-3 py-1.5 text-slate-300 hover:text-white focus-visible:outline-2 focus-visible:outline-despues"
-          >
-            <span aria-hidden="true" class="size-2 rounded-full bg-antes"></span>
-            Sin Flyweight
-          </a>
-        </li>
-        <li>
-          <a
-            routerLink="/despues"
-            routerLinkActive="bg-white/10 !text-white"
-            ariaCurrentWhenActive="page"
-            class="flex items-center gap-2 rounded-md px-3 py-1.5 text-slate-300 hover:text-white focus-visible:outline-2 focus-visible:outline-despues"
-          >
-            <span aria-hidden="true" class="size-2 rounded-full bg-despues"></span>
-            Con Flyweight
-          </a>
-        </li>
-      </ul>
-    </nav>
-  </div>
-</header>
+  <header class="border-b border-slate-200 bg-white/95 backdrop-blur">
+    <div class="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-3">
+      <div class="flex items-center gap-3">
+        <svg aria-hidden="true" viewBox="0 0 40 40" class="size-10 shrink-0">
+          <rect width="40" height="40" rx="10" fill="#047857" />
+          <rect x="7" y="11" width="26" height="18" rx="9" fill="none" stroke="#ffffff" stroke-width="2.5" />
+          <rect x="13" y="16" width="14" height="8" rx="1" fill="#ffffff" />
+          <line x1="20" y1="16" x2="20" y2="24" stroke="#047857" stroke-width="1.5" />
+        </svg>
+        <div>
+          <p class="text-base font-bold leading-tight text-slate-900">Estadio Metropolitano</p>
+          <p class="text-xs text-slate-600">Boletería en línea</p>
+        </div>
+      </div>
+      <p class="hidden text-sm text-slate-600 sm:block">Bogotá · Colombia</p>
+    </div>
+  </header>
+</div>
 
 <main #contenido id="contenido" tabindex="-1" class="mx-auto max-w-7xl px-4 py-8 focus:outline-none">
   <router-outlet />
 </main>
 
-<footer class="border-t border-white/10">
-  <div class="mx-auto max-w-7xl px-4 py-6 text-sm text-slate-400">
-    Patrón explicado según
-    <a
-      href="https://refactoring.guru/es/design-patterns/flyweight"
-      target="_blank"
-      rel="noopener noreferrer"
-      class="text-slate-200 underline underline-offset-2 hover:text-white"
-      >Refactoring Guru<span class="sr-only"> (se abre en una pestaña nueva)</span></a
-    >. Evento, estadio y datos ficticios, generados en el navegador.
+<footer class="no-imprimir border-t border-slate-200 bg-white">
+  <div class="mx-auto max-w-7xl space-y-1 px-4 py-6 text-sm text-slate-600">
+    <p>
+      Sitio ficticio creado para demostrar el patrón de diseño Flyweight, explicado según
+      <a
+        href="https://refactoring.guru/es/design-patterns/flyweight"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="text-slate-900 underline underline-offset-2 hover:text-marca"
+        >Refactoring Guru<span class="sr-only"> (se abre en una pestaña nueva)</span></a
+      >.
+    </p>
+    <p>El estadio, el evento, los precios y las sillas son inventados. No se realizan compras ni cobros reales.</p>
   </div>
 </footer>

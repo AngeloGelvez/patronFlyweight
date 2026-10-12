@@ -1,7 +1,10 @@
 import { DecimalPipe, PercentPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
-import { RouterLink } from '@angular/router';
-import { NOMBRE_VERSION, ResultadoEjecucion } from '../../../core/models/resultado-ejecucion';
+import {
+  MetricasVistas,
+  NOMBRE_VERSION,
+  ResultadoEjecucion,
+} from '../../../core/models/resultado-ejecucion';
 import { ResultadosService } from '../../../core/services/resultados.service';
 import { DuracionPipe, MegabytesPipe, VecesPipe } from '../../pipes/formato.pipes';
 
@@ -27,24 +30,21 @@ const enteros = (valor: number) => valor.toLocaleString('es-CO');
  */
 @Component({
   selector: 'app-comparacion-resultados',
-  imports: [RouterLink, DecimalPipe, PercentPipe, VecesPipe],
+  imports: [DecimalPipe, PercentPipe, VecesPipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <section
-      aria-labelledby="titulo-comparacion"
-      class="rounded-2xl bg-slate-900 p-5 ring-1 ring-white/10 sm:p-6"
-    >
+    <section aria-labelledby="titulo-comparacion" class="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-slate-200 sm:p-6">
       <div class="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h2 id="titulo-comparacion" class="text-lg font-semibold text-white">
+          <h2 id="titulo-comparacion" class="text-lg font-semibold text-slate-900">
             Comparación: sin Flyweight vs con Flyweight
           </h2>
-          <p class="text-sm text-slate-400">Última ejecución de cada versión.</p>
+          <p class="text-sm text-slate-600">Última carga del mapa en cada versión.</p>
         </div>
         @if (antes() || despues()) {
           <button
             type="button"
-            class="rounded-lg px-3 py-1.5 text-sm text-slate-300 ring-1 ring-white/15 hover:bg-white/5 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-despues"
+            class="rounded-lg px-3 py-1.5 text-sm text-slate-700 ring-1 ring-slate-300 hover:bg-slate-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-marca"
             (click)="limpiar()"
           >
             Borrar resultados
@@ -54,33 +54,33 @@ const enteros = (valor: number) => valor.toLocaleString('es-CO');
 
       @if (comparacion(); as c) {
         @if (!c.mismaCantidad) {
-          <p role="status" class="mt-4 flex gap-2 rounded-lg bg-amber-500/10 p-3 text-sm text-amber-200 ring-1 ring-amber-500/30">
+          <p role="status" class="mt-4 flex gap-2 rounded-lg bg-amber-50 p-3 text-sm text-amber-900 ring-1 ring-amber-200">
             <span aria-hidden="true">⚠</span>
             <span>
-              Las ejecuciones usaron cantidades distintas ({{ antes()!.cantidad | number }} y
-              {{ despues()!.cantidad | number }} sillas). Para una comparación justa, ejecuta las dos
-              versiones con la misma cantidad.
+              Las cargas usaron aforos distintos ({{ antes()!.cantidad | number }} y
+              {{ despues()!.cantidad | number }} sillas). Para una comparación justa, usa el mismo
+              aforo en las dos versiones.
             </span>
           </p>
         }
 
         <div class="mt-5 grid gap-3 sm:grid-cols-3">
-          <div class="rounded-xl bg-white/5 p-4">
-            <p class="text-3xl font-bold tabular-nums text-white">{{ c.aceleracionCreacion | veces }}</p>
-            <p class="mt-1 text-sm text-slate-300">más rápido creando los objetos</p>
+          <div class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
+            <p class="text-3xl font-bold tabular-nums text-slate-900">{{ c.aceleracionCreacion | veces }}</p>
+            <p class="mt-1 text-sm text-slate-700">más rápido creando los objetos</p>
           </div>
-          <div class="rounded-xl bg-white/5 p-4">
-            <p class="text-3xl font-bold tabular-nums text-white">{{ c.reduccionMemoria | percent: '1.0-1' }}</p>
-            <p class="mt-1 text-sm text-slate-300">menos memoria estimada</p>
+          <div class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
+            <p class="text-3xl font-bold tabular-nums text-slate-900">{{ c.reduccionMemoria | percent: '1.0-1' }}</p>
+            <p class="mt-1 text-sm text-slate-700">menos memoria estimada del mapa</p>
           </div>
-          <div class="rounded-xl bg-white/5 p-4">
-            <p class="text-3xl font-bold tabular-nums text-white">{{ c.copiasEvitadas | number }}</p>
-            <p class="mt-1 text-sm text-slate-300">copias de localidad que no se crearon</p>
+          <div class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
+            <p class="text-3xl font-bold tabular-nums text-slate-900">{{ c.copiasEvitadas | number }}</p>
+            <p class="mt-1 text-sm text-slate-700">copias de localidad que no se crearon</p>
           </div>
         </div>
 
         <div class="mt-6">
-          <ul aria-label="Series del gráfico" class="flex gap-4 text-sm text-slate-300">
+          <ul aria-label="Series del gráfico" class="flex gap-4 text-sm text-slate-700">
             <li class="flex items-center gap-1.5">
               <span aria-hidden="true" class="size-3 rounded-sm bg-antes"></span>{{ nombre.antes }}
             </li>
@@ -92,25 +92,25 @@ const enteros = (valor: number) => valor.toLocaleString('es-CO');
           <div class="mt-3 grid gap-5 md:grid-cols-2">
             @for (fila of filasGrafico(); track fila.etiqueta) {
               <figure>
-                <figcaption class="text-sm font-medium text-slate-200">{{ fila.etiqueta }}</figcaption>
+                <figcaption class="text-sm font-medium text-slate-800">{{ fila.etiqueta }}</figcaption>
                 <div
                   role="img"
                   class="mt-2 space-y-1.5"
                   [attr.aria-label]="fila.etiqueta + ': ' + nombre.antes + ' ' + fila.textoAntes + ', ' + nombre.despues + ' ' + fila.textoDespues"
                 >
                   <div class="flex items-center gap-2" [title]="nombre.antes + ': ' + fila.textoAntes">
-                    <span class="w-10 shrink-0 text-xs text-slate-400">Sin</span>
+                    <span class="w-10 shrink-0 text-xs text-slate-600">Sin</span>
                     <div class="h-3 flex-1">
                       <div class="h-full rounded-r-[4px] bg-antes" [style.width]="ancho(fila.antes, fila)"></div>
                     </div>
-                    <span class="w-20 shrink-0 text-right text-xs tabular-nums text-slate-200">{{ fila.textoAntes }}</span>
+                    <span class="w-20 shrink-0 text-right text-xs tabular-nums text-slate-800">{{ fila.textoAntes }}</span>
                   </div>
                   <div class="flex items-center gap-2" [title]="nombre.despues + ': ' + fila.textoDespues">
-                    <span class="w-10 shrink-0 text-xs text-slate-400">Con</span>
+                    <span class="w-10 shrink-0 text-xs text-slate-600">Con</span>
                     <div class="h-3 flex-1">
                       <div class="h-full rounded-r-[4px] bg-despues" [style.width]="ancho(fila.despues, fila)"></div>
                     </div>
-                    <span class="w-20 shrink-0 text-right text-xs tabular-nums text-slate-200">{{ fila.textoDespues }}</span>
+                    <span class="w-20 shrink-0 text-right text-xs tabular-nums text-slate-800">{{ fila.textoDespues }}</span>
                   </div>
                 </div>
               </figure>
@@ -119,10 +119,10 @@ const enteros = (valor: number) => valor.toLocaleString('es-CO');
         </div>
 
         <div class="mt-6 overflow-x-auto">
-          <table class="w-full min-w-[32rem] text-left text-sm">
+          <table class="w-full min-w-[34rem] text-left text-sm">
             <caption class="sr-only">Métricas de cada versión y mejora obtenida con Flyweight</caption>
-            <thead class="text-xs uppercase tracking-wide text-slate-400">
-              <tr class="border-b border-white/10">
+            <thead class="text-xs uppercase tracking-wide text-slate-500">
+              <tr class="border-b border-slate-200">
                 <th scope="col" class="py-2 pr-4 font-medium">Métrica</th>
                 <th scope="col" class="py-2 pr-4 text-right font-medium">{{ nombre.antes }}</th>
                 <th scope="col" class="py-2 pr-4 text-right font-medium">{{ nombre.despues }}</th>
@@ -131,33 +131,31 @@ const enteros = (valor: number) => valor.toLocaleString('es-CO');
             </thead>
             <tbody>
               @for (fila of filas(); track fila.etiqueta) {
-                <tr class="border-b border-white/5 last:border-0">
-                  <th scope="row" class="py-2 pr-4 font-normal text-slate-300">{{ fila.etiqueta }}</th>
-                  <td class="py-2 pr-4 text-right tabular-nums text-slate-200">{{ fila.textoAntes }}</td>
-                  <td class="py-2 pr-4 text-right tabular-nums text-slate-200">{{ fila.textoDespues }}</td>
-                  <td class="py-2 text-right tabular-nums font-semibold text-white">{{ fila.mejora }}</td>
+                <tr class="border-b border-slate-100 last:border-0">
+                  <th scope="row" class="py-2 pr-4 font-normal text-slate-700">{{ fila.etiqueta }}</th>
+                  <td class="py-2 pr-4 text-right tabular-nums text-slate-800">{{ fila.textoAntes }}</td>
+                  <td class="py-2 pr-4 text-right tabular-nums text-slate-800">{{ fila.textoDespues }}</td>
+                  <td class="py-2 text-right font-semibold tabular-nums text-slate-900">{{ fila.mejora }}</td>
                 </tr>
               }
             </tbody>
           </table>
+          <p class="mt-2 text-xs text-slate-500">
+            Las vistas previas dependen de cuántas sillas seleccionaste en cada versión: sin Flyweight
+            se dibuja una por silla; con Flyweight, una por zona (máximo 7).
+          </p>
         </div>
       } @else {
-        <div class="mt-4 rounded-xl border border-dashed border-white/15 p-5 text-sm text-slate-300">
+        <div class="mt-4 rounded-xl border border-dashed border-slate-300 p-5 text-sm text-slate-700">
           @if (antes(); as a) {
-            Ya tienes el resultado <strong>sin Flyweight</strong> con {{ a.cantidad | number }} sillas.
-            Ejecuta la versión con Flyweight con la misma cantidad para compararlas.
-            <a routerLink="/despues" class="mt-3 block w-fit font-medium text-despues underline-offset-4 hover:underline">
-              Ir a la versión con Flyweight →
-            </a>
+            Ya tienes la carga <strong>sin Flyweight</strong> con {{ a.cantidad | number }} sillas.
+            Cambia a <strong>Con Flyweight</strong> en la barra superior para compararlas.
           } @else if (despues()) {
-            Ya tienes el resultado <strong>con Flyweight</strong> con {{ despues()!.cantidad | number }} sillas.
-            Ejecuta la versión sin Flyweight con la misma cantidad para compararlas.
-            <a routerLink="/antes" class="mt-3 block w-fit font-medium text-despues underline-offset-4 hover:underline">
-              ← Ir a la versión sin Flyweight
-            </a>
+            Ya tienes la carga <strong>con Flyweight</strong> con {{ despues()!.cantidad | number }} sillas.
+            Cambia a <strong>Sin Flyweight</strong> en la barra superior para compararlas.
           } @else {
-            Todavía no hay resultados. Ejecuta las dos versiones con la misma cantidad de sillas y
-            aquí verás cuánto mejora el rendimiento con el patrón Flyweight.
+            Todavía no hay resultados. Carga el mapa en las dos versiones con el mismo aforo para
+            ver cuánto mejora el rendimiento con el patrón Flyweight.
           }
         </div>
       }
@@ -175,7 +173,9 @@ export class ComparacionResultadosComponent {
   protected readonly filas = computed<FilaComparacion[]>(() => {
     const antes = this.antes();
     const despues = this.despues();
-    return antes && despues ? construirFilas(antes, despues) : [];
+    return antes && despues
+      ? construirFilas(antes, despues, this.resultados.vistasAntes(), this.resultados.vistasDespues())
+      : [];
   });
 
   protected readonly filasGrafico = computed(() => this.filas().filter((f) => f.enGrafico));
@@ -192,7 +192,12 @@ export class ComparacionResultadosComponent {
   }
 }
 
-function construirFilas(antes: ResultadoEjecucion, despues: ResultadoEjecucion): FilaComparacion[] {
+function construirFilas(
+  antes: ResultadoEjecucion,
+  despues: ResultadoEjecucion,
+  vistasAntes: MetricasVistas | null,
+  vistasDespues: MetricasVistas | null,
+): FilaComparacion[] {
   const tiempo = (etiqueta: string, a: number, d: number): FilaComparacion => ({
     etiqueta,
     antes: a,
@@ -213,12 +218,15 @@ function construirFilas(antes: ResultadoEjecucion, despues: ResultadoEjecucion):
     enGrafico: false,
   });
 
+  const vistas = (m: MetricasVistas | null) =>
+    m ? `${enteros(m.renderizadas)} de ${enteros(m.solicitadas)}` : '—';
+
   return [
     tiempo('Crear objetos', antes.creacionMs, despues.creacionMs),
     tiempo('Dibujar mapa', antes.renderMs, despues.renderMs),
     tiempo('Tiempo total', antes.totalMs, despues.totalMs),
     {
-      etiqueta: 'Memoria estimada',
+      etiqueta: 'Memoria estimada del mapa',
       antes: antes.memoriaEstimadaBytes,
       despues: despues.memoriaEstimadaBytes,
       textoAntes: megabytes.transform(antes.memoriaEstimadaBytes),
@@ -228,5 +236,14 @@ function construirFilas(antes: ResultadoEjecucion, despues: ResultadoEjecucion):
     },
     conteo('Copias de localidad', antes.copiasDeLocalidad, despues.copiasDeLocalidad),
     conteo('Iconos renderizados', antes.iconos, despues.iconos),
+    {
+      etiqueta: 'Vistas previas dibujadas (de solicitadas)',
+      antes: vistasAntes?.renderizadas ?? 0,
+      despues: vistasDespues?.renderizadas ?? 0,
+      textoAntes: vistas(vistasAntes),
+      textoDespues: vistas(vistasDespues),
+      mejora: '—',
+      enGrafico: false,
+    },
   ];
 }

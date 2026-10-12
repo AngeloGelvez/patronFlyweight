@@ -1,5 +1,6 @@
 import { LocalidadId } from './localidades.db';
 import { crearAleatorio } from './seeded-random';
+import { ZonaId, zonaDeSilla } from './zonas.db';
 
 /**
  * "Tabla" de sillas del estadio.
@@ -27,6 +28,8 @@ export interface SillaRegistro {
   readonly y: number;
   readonly estado: EstadoSilla;
   readonly localidadId: LocalidadId;
+  /** Zona desde la que se calcula la vista previa de la cancha. */
+  readonly zona: ZonaId;
 }
 
 export interface Rectangulo {
@@ -70,7 +73,7 @@ export const GEOMETRIA_ESTADIO = {
   cancha: { x: 590, y: 300, ancho: 620, alto: 400 },
 } as const;
 
-const SECCIONES_POR_TRIBUNA = 4;
+export const SECCIONES_POR_TRIBUNA = 4;
 
 const PREFIJO_TRIBUNA: Record<Tribuna, string> = {
   ORIENTAL: 'ORI',
@@ -204,7 +207,7 @@ function construirAnillos(separacion: number): Anillo[] {
   return anillos;
 }
 
-interface Segmento {
+export interface Segmento {
   readonly tribuna: Tribuna;
   readonly largo: number;
   /** Convierte una distancia recorrida sobre el segmento en un punto (x, y). */
@@ -216,7 +219,7 @@ interface Segmento {
  * por la esquina superior izquierda. En el plano, la tribuna oriental está
  * arriba, la sur a la derecha, la occidental abajo y la norte a la izquierda.
  */
-function segmentosDelAnillo(radio: number): Segmento[] {
+export function segmentosDelAnillo(radio: number): Segmento[] {
   const { centroX, centroY, largoRecto } = GEOMETRIA_ESTADIO;
   const izquierda = centroX - largoRecto / 2;
   const derecha = centroX + largoRecto / 2;
@@ -288,6 +291,7 @@ function tomarRepartidas<T>(elementos: readonly T[], cantidad: number): T[] {
 
 function crearSilla(posicion: Posicion, anillo: Anillo, azar: number): SillaRegistro {
   const seccion = `${PREFIJO_TRIBUNA[posicion.tribuna]}-${anillo.bandeja}0${posicion.indiceSeccion + 1}`;
+  const localidadId = asignarLocalidad(posicion.tribuna, posicion.indiceSeccion, anillo.bandeja);
 
   return {
     id: `${seccion}-F${anillo.fila}-N${posicion.numero}`,
@@ -298,7 +302,8 @@ function crearSilla(posicion: Posicion, anillo: Anillo, azar: number): SillaRegi
     x: posicion.x,
     y: posicion.y,
     estado: elegirEstado(azar),
-    localidadId: asignarLocalidad(posicion.tribuna, posicion.indiceSeccion, anillo.bandeja),
+    localidadId,
+    zona: zonaDeSilla(posicion.tribuna, localidadId),
   };
 }
 
@@ -314,7 +319,7 @@ function elegirEstado(azar: number): EstadoSilla {
  * los arcos. Las esquinas de norte y sur se venden con la tribuna lateral
  * más cercana.
  */
-function asignarLocalidad(tribuna: Tribuna, indiceSeccion: number, bandeja: 1 | 2): LocalidadId {
+export function asignarLocalidad(tribuna: Tribuna, indiceSeccion: number, bandeja: 1 | 2): LocalidadId {
   const esCentral = indiceSeccion === 1 || indiceSeccion === 2;
 
   switch (tribuna) {

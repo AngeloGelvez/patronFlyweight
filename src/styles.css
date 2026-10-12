@@ -1,15 +1,24 @@
 @import "tailwindcss";
 
 @theme {
-  /* Colores de cada versión, usados en botones, insignias y gráficos. */
+  /* Color de la marca del estadio, usado en botones y acciones principales. */
+  --color-marca: #047857;
+  --color-marca-oscuro: #065f46;
+  /* Series de los gráficos de comparación: gris = sin Flyweight, tinta = con Flyweight. */
   --color-antes: #94a3b8;
-  --color-despues: #9085e9;
+  --color-despues: #0f172a;
 }
 
 html {
-  color-scheme: dark;
+  color-scheme: light;
 }
 
 body {
-  @apply bg-slate-950 text-slate-100 antialiased;
+  @apply bg-slate-50 text-slate-900 antialiased;
+}
+
+@media print {
+  .no-imprimir {
+    display: none !important;
+  }
 }

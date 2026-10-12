@@ -60,13 +60,13 @@ export function crearIconoSilla(color: string, tamano: number = TAMANO_ICONO_PX)
   return lienzo;
 }
 
-function crearLienzo(tamano: number): Lienzo {
+export function crearLienzo(ancho: number, alto: number = ancho): Lienzo {
   if (typeof OffscreenCanvas !== 'undefined') {
-    return new OffscreenCanvas(tamano, tamano);
+    return new OffscreenCanvas(ancho, alto);
   }
 
   const lienzo = document.createElement('canvas');
-  lienzo.width = tamano;
-  lienzo.height = tamano;
+  lienzo.width = ancho;
+  lienzo.height = alto;
   return lienzo;
 }

@@ -1,6 +1,6 @@
 import { EstadioGenerado } from '../core/data/estadio.generator';
 import { obtenerLocalidad } from '../core/data/localidades.db';
-import { DetalleSilla, EstadisticasMapa, MapaDeSillas } from '../core/models/mapa-de-sillas';
+import { EstadisticasMapa, MapaDeSillas, SillaSeleccionada } from '../core/models/mapa-de-sillas';
 import { ESCALA_ICONO, OPACIDAD_POR_ESTADO } from '../core/render/icono-silla';
 import { buscarMasCercano } from '../core/utils/geometria';
 import { SillaPesada } from './silla-pesada';
@@ -35,9 +35,9 @@ export class EstadioSinFlyweight implements MapaDeSillas {
     ctx.globalAlpha = 1;
   }
 
-  buscarSilla(x: number, y: number): DetalleSilla | null {
+  seleccionarSilla(x: number, y: number): SillaSeleccionada | null {
     const silla = buscarMasCercano(this.sillas, x, y, this.plano.separacionSillas / 2);
-    return silla ? silla.detalle() : null;
+    return silla ? { detalle: silla.detalle(), obtenerVista: () => silla.obtenerVista() } : null;
   }
 
   estadisticas(): EstadisticasMapa {
@@ -45,6 +45,7 @@ export class EstadioSinFlyweight implements MapaDeSillas {
       sillas: this.sillas.length,
       copiasDeLocalidad: this.sillas.length,
       iconos: this.sillas.length,
+      vistasRenderizadas: this.sillas.filter((s) => s.tieneVista).length,
       memoriaEstimadaBytes: this.sillas.reduce((total, s) => total + s.memoriaEstimadaBytes(), 0),
     };
   }

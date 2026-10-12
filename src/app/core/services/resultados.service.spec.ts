@@ -69,6 +69,20 @@ describe('ResultadosService', () => {
     expect(recargado.despues()?.version).toBe('despues');
   });
 
+  it('acumula las vistas previas y las reinicia al cargar un mapa nuevo', () => {
+    const servicio = TestBed.inject(ResultadosService);
+    servicio.registrar(resultado({ version: 'despues' }));
+    servicio.registrarVista('despues', 40, 1);
+    servicio.registrarVista('despues', 0, 1);
+
+    expect(servicio.vistasDespues()).toEqual(
+      jasmine.objectContaining({ solicitadas: 2, renderizadas: 1, ultimaMs: 0, totalMs: 40 }),
+    );
+
+    servicio.registrar(resultado({ version: 'despues' }));
+    expect(servicio.vistasDespues()).toBeNull();
+  });
+
   it('limpia los resultados', () => {
     const servicio = TestBed.inject(ResultadosService);
     servicio.registrar(resultado({ version: 'antes' }));

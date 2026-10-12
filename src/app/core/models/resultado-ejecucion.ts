@@ -41,3 +41,14 @@ export interface Comparacion {
   /** Copias de localidad que el patrón evitó crear. */
   readonly copiasEvitadas: number;
 }
+
+/** Métricas de las vistas previas de la cancha pedidas al seleccionar sillas. */
+export interface MetricasVistas {
+  /** Veces que el usuario pidió una vista (cada silla seleccionada). */
+  readonly solicitadas: number;
+  /** Vistas distintas que existen en memoria (se dibujaron de verdad). */
+  readonly renderizadas: number;
+  readonly ultimaMs: number;
+  readonly totalMs: number;
+  readonly memoriaEstimadaBytes: number;
+}

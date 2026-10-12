@@ -44,3 +44,8 @@ export function bytesDeLocalidad(localidad: LocalidadRegistro): number {
 export function bytesDeIcono(tamanoPx: number): number {
   return tamanoPx * tamanoPx * BYTES_POR_PIXEL;
 }
+
+/** Memoria de los píxeles de una imagen rectangular. */
+export function bytesDeImagen(ancho: number, alto: number): number {
+  return ancho * alto * BYTES_POR_PIXEL;
+}

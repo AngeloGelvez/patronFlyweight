@@ -52,7 +52,7 @@ export const LOCALIDADES: readonly LocalidadRegistro[] = [
     descripcion:
       'Zona privada en la bandeja alta de occidental, con la mejor vista panorámica de la cancha.',
     precio: 1_200_000,
-    color: '#d55181',
+    color: '#4a3aa7',
     beneficios: [
       'Ingreso por puerta exclusiva sin filas',
       'Servicio de catering y bebidas durante todo el evento',
@@ -71,7 +71,7 @@ export const LOCALIDADES: readonly LocalidadRegistro[] = [
     descripcion:
       'Primeras filas de occidental, en el centro de la cancha y a nivel del terreno de juego.',
     precio: 850_000,
-    color: '#c98500',
+    color: '#eda100',
     beneficios: [
       'Ingreso preferencial por puerta 1',
       'Acceso a la zona lounge con comidas y bebidas',
@@ -88,7 +88,7 @@ export const LOCALIDADES: readonly LocalidadRegistro[] = [
     descripcion:
       'Bandeja baja central de oriental, frente a las cámaras de televisión y a los bancos técnicos.',
     precio: 420_000,
-    color: '#e66767',
+    color: '#e34948',
     beneficios: [
       'Ingreso por puerta 5 con filas reducidas',
       'Silla numerada con espaldar',
@@ -103,7 +103,7 @@ export const LOCALIDADES: readonly LocalidadRegistro[] = [
     nombre: 'Occidental',
     descripcion: 'Tribuna occidental lateral, con techo que protege de la lluvia y del sol.',
     precio: 280_000,
-    color: '#3987e5',
+    color: '#2a78d6',
     beneficios: ['Silla numerada', 'Tribuna cubierta', 'Pantalla gigante frente a la tribuna'],
     terminosYCondiciones: terminos(),
   },
@@ -112,7 +112,7 @@ export const LOCALIDADES: readonly LocalidadRegistro[] = [
     nombre: 'Oriental',
     descripcion: 'Tribuna oriental lateral, con vista completa de la cancha desde el costado.',
     precio: 220_000,
-    color: '#199e70',
+    color: '#1baf7a',
     beneficios: ['Silla numerada', 'Vista lateral de toda la cancha'],
     terminosYCondiciones: terminos(),
   },
@@ -121,7 +121,7 @@ export const LOCALIDADES: readonly LocalidadRegistro[] = [
     nombre: 'General',
     descripcion: 'Tribunas norte y sur, detrás de los arcos. El ambiente más animado del estadio.',
     precio: 95_000,
-    color: '#d95926',
+    color: '#eb6834',
     beneficios: ['Silla numerada', 'Ambiente de barra detrás del arco'],
     terminosYCondiciones: terminos(
       '11. En las tribunas norte y sur solo se permite el ingreso de banderas sin astas y de instrumentos musicales previamente autorizados por el organizador.',

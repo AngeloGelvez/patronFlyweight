@@ -1,6 +1,8 @@
 import { inject, Injectable } from '@angular/core';
 import { EstadioGenerado, generarEstadio } from '../data/estadio.generator';
-import { MapaDeSillas } from '../models/mapa-de-sillas';
+import { ZONAS } from '../data/zonas.db';
+import { MapaDeSillas, SillaSeleccionada } from '../models/mapa-de-sillas';
+import { Lienzo } from '../render/icono-silla';
 import { NOMBRE_VERSION, ResultadoEjecucion, VersionMapa } from '../models/resultado-ejecucion';
 import { PerformanceMonitorService } from './performance-monitor.service';
 import { ResultadosService } from './resultados.service';
@@ -75,6 +77,20 @@ export class BenchmarkService {
     } finally {
       console.groupEnd();
     }
+  }
+
+  /**
+   * Obtiene la vista previa de la silla seleccionada y mide cuánto tarda. Sin
+   * Flyweight se dibuja una imagen nueva por cada silla; con Flyweight solo la
+   * primera vez de cada zona.
+   */
+  medirVista(version: VersionMapa, mapa: MapaDeSillas, silla: SillaSeleccionada): Lienzo {
+    const zona = ZONAS[silla.detalle.zona].nombre;
+    const etiqueta = `[${NOMBRE_VERSION[version]}] Vista previa · ${zona}`;
+    const { resultado, ms } = this.monitor.medir(etiqueta, () => silla.obtenerVista());
+
+    this.resultados.registrarVista(version, ms, mapa.estadisticas().vistasRenderizadas);
+    return resultado;
   }
 }
 
