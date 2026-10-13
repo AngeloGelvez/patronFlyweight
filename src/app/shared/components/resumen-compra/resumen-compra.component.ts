@@ -16,7 +16,7 @@ import { VistaPreviaComponent } from '../vista-previa/vista-previa.component';
     <aside aria-labelledby="titulo-resumen" class="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-slate-200">
       <h2 id="titulo-resumen" class="text-base font-semibold text-slate-900">Resumen de tu compra</h2>
       <p class="mt-1 text-sm text-slate-600">
-        {{ evento.nombre }} · {{ evento.fecha | date: "EEE d 'de' MMM, h:mm a" }}
+        {{ evento.local.nombre }} vs {{ evento.visitante.nombre }} · {{ evento.fecha | date: "EEE d 'de' MMM, HH:mm" : evento.zonaHoraria }}
       </p>
 
       @if (compra.silla(); as s) {
@@ -29,21 +29,21 @@ import { VistaPreviaComponent } from '../vista-previa/vista-previa.component';
           <p class="font-semibold text-slate-900">{{ ubicacion() }}</p>
         </div>
         <p class="mt-1 font-mono text-sm text-slate-700">
-          Sección {{ s.seccion }} · Fila {{ s.fila }} · Silla {{ s.numero }}
+          Sección {{ s.seccion }} · Fila {{ s.fila }} · Asiento {{ s.numero }}
         </p>
 
         <dl class="mt-4 space-y-1.5 border-t border-slate-200 pt-4 text-sm">
           <div class="flex justify-between">
-            <dt class="text-slate-600">Boleta</dt>
-            <dd class="tabular-nums text-slate-900">{{ compra.precio() | currency: 'COP' : 'symbol-narrow' : '1.0-0' }}</dd>
+            <dt class="text-slate-600">Entrada</dt>
+            <dd class="tabular-nums text-slate-900">{{ compra.precio() | currency: 'EUR' : 'symbol' : '1.2-2' }}</dd>
           </div>
           <div class="flex justify-between">
-            <dt class="text-slate-600">Cargo por servicio (10 %)</dt>
-            <dd class="tabular-nums text-slate-900">{{ compra.cargoServicio() | currency: 'COP' : 'symbol-narrow' : '1.0-0' }}</dd>
+            <dt class="text-slate-600">Gastos de gestión (10 %)</dt>
+            <dd class="tabular-nums text-slate-900">{{ compra.cargoServicio() | currency: 'EUR' : 'symbol' : '1.2-2' }}</dd>
           </div>
           <div class="flex justify-between border-t border-slate-200 pt-2 text-base font-semibold">
             <dt>Total</dt>
-            <dd class="tabular-nums">{{ compra.total() | currency: 'COP' : 'symbol-narrow' : '1.0-0' }}</dd>
+            <dd class="tabular-nums">{{ compra.total() | currency: 'EUR' : 'symbol' : '1.2-2' }}</dd>
           </div>
         </dl>
       }

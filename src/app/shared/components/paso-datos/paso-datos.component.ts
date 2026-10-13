@@ -3,10 +3,9 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CompraService, TipoDocumento } from '../../../core/services/compra.service';
 
 const TIPOS_DOCUMENTO: readonly { readonly id: TipoDocumento; readonly nombre: string }[] = [
-  { id: 'CC', nombre: 'Cédula de ciudadanía' },
-  { id: 'CE', nombre: 'Cédula de extranjería' },
-  { id: 'TI', nombre: 'Tarjeta de identidad' },
-  { id: 'PA', nombre: 'Pasaporte' },
+  { id: 'DNI', nombre: 'DNI' },
+  { id: 'NIE', nombre: 'NIE' },
+  { id: 'PASAPORTE', nombre: 'Pasaporte' },
 ];
 
 type CampoDatos = 'nombre' | 'tipoDocumento' | 'documento' | 'correo' | 'celular' | 'acepto';
@@ -14,21 +13,21 @@ type CampoDatos = 'nombre' | 'tipoDocumento' | 'documento' | 'correo' | 'celular
 /** Campos validados, en el orden del formulario (su id coincide con el nombre). */
 const CAMPOS_EN_ORDEN: readonly CampoDatos[] = ['nombre', 'documento', 'correo', 'celular', 'acepto'];
 
-/** Paso 2: datos de la persona que va a usar la boleta. */
+/** Paso 2: datos de la persona que va a usar la entrada. */
 @Component({
   selector: 'app-paso-datos',
   imports: [ReactiveFormsModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <section aria-labelledby="titulo-datos" class="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-slate-200 sm:p-6">
-      <h2 id="titulo-datos" class="text-lg font-semibold text-slate-900">Datos del asistente</h2>
+      <h2 id="titulo-datos" class="text-lg font-semibold text-slate-900">Datos del titular</h2>
       <p class="mt-1 text-sm text-slate-600">
-        La boleta es personal: la persona que ingresa debe presentar este documento en la puerta.
+        La entrada es nominativa: quien accede al estadio debe llevar este documento.
       </p>
 
       <form class="mt-5 grid gap-4 sm:grid-cols-2" [formGroup]="formulario" (ngSubmit)="enviar()" novalidate>
         <div class="sm:col-span-2">
-          <label for="nombre" class="text-sm font-medium text-slate-800">Nombre completo</label>
+          <label for="nombre" class="text-sm font-medium text-slate-800">Nombre y apellidos</label>
           <input
             id="nombre"
             type="text"
@@ -39,7 +38,7 @@ const CAMPOS_EN_ORDEN: readonly CampoDatos[] = ['nombre', 'documento', 'correo',
             [class]="claseCampo('nombre')"
           />
           @if (invalido('nombre')) {
-            <p id="error-nombre" class="mt-1 text-sm text-red-700">Escribe tu nombre y apellido.</p>
+            <p id="error-nombre" class="mt-1 text-sm text-red-700">Escribe tu nombre y al menos un apellido.</p>
           }
         </div>
 
@@ -57,15 +56,16 @@ const CAMPOS_EN_ORDEN: readonly CampoDatos[] = ['nombre', 'documento', 'correo',
           <input
             id="documento"
             type="text"
-            inputmode="numeric"
+            autocapitalize="characters"
             formControlName="documento"
             [attr.aria-invalid]="invalido('documento')"
-            aria-describedby="error-documento"
+            aria-describedby="ayuda-documento error-documento"
             [class]="claseCampo('documento')"
           />
+          <p id="ayuda-documento" class="mt-1 text-xs text-slate-500">Por ejemplo, 12345678Z.</p>
           @if (invalido('documento')) {
             <p id="error-documento" class="mt-1 text-sm text-red-700">
-              Usa entre 5 y 12 caracteres, sin puntos ni espacios.
+              Usa entre 6 y 12 letras o números, sin espacios ni guiones.
             </p>
           }
         </div>
@@ -81,14 +81,14 @@ const CAMPOS_EN_ORDEN: readonly CampoDatos[] = ['nombre', 'documento', 'correo',
             aria-describedby="ayuda-correo error-correo"
             [class]="claseCampo('correo')"
           />
-          <p id="ayuda-correo" class="mt-1 text-xs text-slate-500">Allí enviaríamos la boleta.</p>
+          <p id="ayuda-correo" class="mt-1 text-xs text-slate-500">Allí te enviaríamos la entrada.</p>
           @if (invalido('correo')) {
-            <p id="error-correo" class="mt-1 text-sm text-red-700">Escribe un correo válido, por ejemplo nombre&#64;correo.com.</p>
+            <p id="error-correo" class="mt-1 text-sm text-red-700">Escribe un correo válido, por ejemplo nombre&#64;correo.es.</p>
           }
         </div>
 
         <div>
-          <label for="celular" class="text-sm font-medium text-slate-800">Celular</label>
+          <label for="celular" class="text-sm font-medium text-slate-800">Teléfono móvil</label>
           <input
             id="celular"
             type="tel"
@@ -100,7 +100,7 @@ const CAMPOS_EN_ORDEN: readonly CampoDatos[] = ['nombre', 'documento', 'correo',
             [class]="claseCampo('celular')"
           />
           @if (invalido('celular')) {
-            <p id="error-celular" class="mt-1 text-sm text-red-700">Escribe un celular de 10 dígitos que empiece por 3.</p>
+            <p id="error-celular" class="mt-1 text-sm text-red-700">Escribe un móvil de 9 dígitos que empiece por 6 o 7.</p>
           }
         </div>
 
@@ -114,10 +114,10 @@ const CAMPOS_EN_ORDEN: readonly CampoDatos[] = ['nombre', 'documento', 'correo',
               [attr.aria-invalid]="invalido('acepto')"
               aria-describedby="error-acepto"
             />
-            Acepto los términos y condiciones de la localidad y el tratamiento de mis datos para esta compra.
+            Acepto las condiciones de la localidad y el tratamiento de mis datos para esta compra.
           </label>
           @if (invalido('acepto')) {
-            <p id="error-acepto" class="mt-1 text-sm text-red-700">Debes aceptar los términos para continuar.</p>
+            <p id="error-acepto" class="mt-1 text-sm text-red-700">Debes aceptar las condiciones para continuar.</p>
           }
         </div>
 
@@ -127,7 +127,7 @@ const CAMPOS_EN_ORDEN: readonly CampoDatos[] = ['nombre', 'documento', 'correo',
             class="rounded-xl px-5 py-3 text-sm font-medium text-slate-700 ring-1 ring-slate-300 hover:bg-slate-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-marca"
             (click)="volver.emit()"
           >
-            ← Cambiar silla
+            ← Cambiar asiento
           </button>
           <button
             type="submit"
@@ -150,10 +150,10 @@ export class PasoDatosComponent {
 
   protected readonly formulario = inject(FormBuilder).nonNullable.group({
     nombre: [this.compra.asistente()?.nombre ?? '', [Validators.required, Validators.pattern(/^\S+(\s+\S+)+$/)]],
-    tipoDocumento: [this.compra.asistente()?.tipoDocumento ?? ('CC' as TipoDocumento)],
-    documento: [this.compra.asistente()?.documento ?? '', [Validators.required, Validators.pattern(/^[A-Za-z0-9]{5,12}$/)]],
+    tipoDocumento: [this.compra.asistente()?.tipoDocumento ?? ('DNI' as TipoDocumento)],
+    documento: [this.compra.asistente()?.documento ?? '', [Validators.required, Validators.pattern(/^[A-Za-z0-9]{6,12}$/)]],
     correo: [this.compra.asistente()?.correo ?? '', [Validators.required, Validators.email]],
-    celular: [this.compra.asistente()?.celular ?? '', [Validators.required, Validators.pattern(/^3\d{9}$/)]],
+    celular: [this.compra.asistente()?.celular ?? '', [Validators.required, Validators.pattern(/^[67]\d{8}$/)]],
     acepto: [this.compra.asistente() !== null, Validators.requiredTrue],
   });
 
@@ -178,6 +178,10 @@ export class PasoDatosComponent {
     }
 
     const { acepto: _acepto, ...datos } = this.formulario.getRawValue();
-    this.compra.guardarDatos({ ...datos, nombre: datos.nombre.trim() });
+    this.compra.guardarDatos({
+      ...datos,
+      nombre: datos.nombre.trim(),
+      documento: datos.documento.toUpperCase(),
+    });
   }
 }

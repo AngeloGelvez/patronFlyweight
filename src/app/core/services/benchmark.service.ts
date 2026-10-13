@@ -34,7 +34,7 @@ export class BenchmarkService {
   private readonly resultados = inject(ResultadosService);
 
   ejecutar({ version, cantidad, crearMapa, renderizar }: OpcionesEjecucion): EjecucionCompletada {
-    const etiqueta = `[${NOMBRE_VERSION[version]}] ${cantidad.toLocaleString('es-CO')} sillas`;
+    const etiqueta = `[${NOMBRE_VERSION[version]}] ${cantidad.toLocaleString('es-ES')} asientos`;
     console.group(etiqueta);
 
     try {

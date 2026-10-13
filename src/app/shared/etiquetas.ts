@@ -4,8 +4,8 @@ import { EstadoSilla, Tribuna } from '../core/data/estadio.generator';
 
 export const NOMBRE_ESTADO: Record<EstadoSilla, string> = {
   DISPONIBLE: 'Disponible',
-  RESERVADA: 'Reservada',
-  VENDIDA: 'Vendida',
+  RESERVADA: 'Reservado',
+  VENDIDA: 'Vendido',
 };
 
 export const ICONO_ESTADO: Record<EstadoSilla, string> = {
@@ -15,13 +15,13 @@ export const ICONO_ESTADO: Record<EstadoSilla, string> = {
 };
 
 export const NOMBRE_TRIBUNA: Record<Tribuna, string> = {
-  ORIENTAL: 'Oriental',
-  SUR: 'Sur',
-  OCCIDENTAL: 'Occidental',
-  NORTE: 'Norte',
+  ORIENTAL: 'Lateral Este',
+  SUR: 'Fondo Sur',
+  OCCIDENTAL: 'Lateral Oeste',
+  NORTE: 'Fondo Norte',
 };
 
-/** "General · General Sur", o solo "Palco" cuando la zona se llama igual que la localidad. */
+/** "Fondo · Fondo Sur", o solo "Palco" cuando la zona se llama igual que la localidad. */
 export function nombreLocalidadYZona(localidad: string, zona: string): string {
   return localidad === zona ? localidad : `${localidad} · ${zona}`;
 }

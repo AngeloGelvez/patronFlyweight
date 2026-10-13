@@ -3,9 +3,9 @@ import { ChangeDetectionStrategy, Component, inject, output, signal } from '@ang
 import { CompraService, MetodoPago } from '../../../core/services/compra.service';
 
 const METODOS: readonly { readonly id: MetodoPago; readonly nombre: string; readonly detalle: string }[] = [
-  { id: 'PSE', nombre: 'PSE', detalle: 'Débito desde tu cuenta bancaria' },
-  { id: 'TARJETA', nombre: 'Tarjeta crédito o débito', detalle: 'Visa, Mastercard, American Express' },
-  { id: 'NEQUI', nombre: 'Nequi', detalle: 'Pago desde la app con tu celular' },
+  { id: 'TARJETA', nombre: 'Tarjeta de crédito o débito', detalle: 'Visa, Mastercard, American Express' },
+  { id: 'BIZUM', nombre: 'Bizum', detalle: 'Pago inmediato desde tu móvil' },
+  { id: 'PAYPAL', nombre: 'PayPal', detalle: 'Paga con tu cuenta de PayPal' },
 ];
 
 /** Tiempo que se muestra el mensaje "Procesando pago…". */
@@ -71,7 +71,7 @@ const DURACION_PAGO_SIMULADO_MS = 1_200;
           @if (procesando()) {
             Procesando pago…
           } @else {
-            Pagar {{ compra.total() | currency: 'COP' : 'symbol-narrow' : '1.0-0' }}
+            Pagar {{ compra.total() | currency: 'EUR' : 'symbol' : '1.2-2' }}
           }
         </button>
       </div>
@@ -84,7 +84,7 @@ export class PasoPagoComponent {
 
   protected readonly compra = inject(CompraService);
   protected readonly metodos = METODOS;
-  protected readonly seleccionado = signal<MetodoPago>(this.compra.metodoPago() ?? 'PSE');
+  protected readonly seleccionado = signal<MetodoPago>(this.compra.metodoPago() ?? 'TARJETA');
   protected readonly procesando = signal(false);
 
   protected pagar(): void {

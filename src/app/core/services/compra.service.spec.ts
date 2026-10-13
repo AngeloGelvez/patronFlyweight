@@ -16,7 +16,7 @@ const SILLA: DetalleSilla = {
     id: 'VIP',
     nombre: 'VIP',
     descripcion: '',
-    precio: 850_000,
+    precio: 280,
     color: '#eda100',
     beneficios: [],
     terminosYCondiciones: '',
@@ -25,10 +25,10 @@ const SILLA: DetalleSilla = {
 
 const ASISTENTE: DatosAsistente = {
   nombre: 'Ana Gómez',
-  tipoDocumento: 'CC',
-  documento: '12345678',
+  tipoDocumento: 'DNI',
+  documento: '12345678Z',
   correo: 'ana@ejemplo.com',
-  celular: '3001234567',
+  celular: '612345678',
 };
 
 describe('CompraService', () => {
@@ -48,16 +48,16 @@ describe('CompraService', () => {
     compra.guardarDatos(ASISTENTE);
     expect(compra.paso()).toBe('pago');
 
-    compra.pagar('PSE');
+    compra.pagar('TARJETA');
     expect(compra.paso()).toBe('boleta');
     expect(compra.codigo()).toMatch(/^MET-[0-9A-Z]{7}$/);
   });
 
-  it('suma el 10 % de cargo por servicio', () => {
+  it('suma el 10 % de gastos de gestión', () => {
     compra.elegirSilla(SILLA, 25_000);
 
-    expect(compra.cargoServicio()).toBe(85_000);
-    expect(compra.total()).toBe(935_000);
+    expect(compra.cargoServicio()).toBe(28);
+    expect(compra.total()).toBe(308);
   });
 
   it('descarta la silla si el mapa se carga con otro aforo', () => {
@@ -71,7 +71,7 @@ describe('CompraService', () => {
   it('conserva una boleta ya comprada aunque cambie el aforo', () => {
     compra.elegirSilla(SILLA, 25_000);
     compra.guardarDatos(ASISTENTE);
-    compra.pagar('NEQUI');
+    compra.pagar('BIZUM');
     compra.sincronizarAforo(50_000);
 
     expect(compra.paso()).toBe('boleta');

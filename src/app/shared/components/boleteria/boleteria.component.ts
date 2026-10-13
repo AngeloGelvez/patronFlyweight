@@ -14,38 +14,38 @@ import { EstadioGenerado } from '../../../core/data/estadio.generator';
 import { EVENTO } from '../../../core/data/evento.db';
 import { LocalidadId, LOCALIDADES } from '../../../core/data/localidades.db';
 import { MapaDeSillas, SillaSeleccionada } from '../../../core/models/mapa-de-sillas';
-import { NOMBRE_VERSION, VersionMapa } from '../../../core/models/resultado-ejecucion';
+import { VersionMapa } from '../../../core/models/resultado-ejecucion';
 import { Lienzo } from '../../../core/render/icono-silla';
 import { BenchmarkService } from '../../../core/services/benchmark.service';
 import { CompraService, PASOS_COMPRA } from '../../../core/services/compra.service';
 import { DemoService } from '../../../core/services/demo.service';
-import { ResultadosService } from '../../../core/services/resultados.service';
-import { DuracionPipe, MegabytesPipe } from '../../pipes/formato.pipes';
 import { BoletaComponent } from '../boleta/boleta.component';
-import { ComparacionResultadosComponent } from '../comparacion-resultados/comparacion-resultados.component';
+import { EscudoEquipoComponent } from '../escudo-equipo/escudo-equipo.component';
 import { LeyendaMapaComponent } from '../leyenda-mapa/leyenda-mapa.component';
 import { MapaEstadioComponent, PuntoPlano } from '../mapa-estadio/mapa-estadio.component';
 import { PanelSillaComponent } from '../panel-silla/panel-silla.component';
 import { PasoDatosComponent } from '../paso-datos/paso-datos.component';
 import { PasoPagoComponent } from '../paso-pago/paso-pago.component';
 import { ResumenCompraComponent } from '../resumen-compra/resumen-compra.component';
-import { TarjetaMetricaComponent } from '../tarjeta-metrica/tarjeta-metrica.component';
 
 /** Desde este aforo, la versión sin Flyweight pide confirmación antes de cargar. */
 const AFORO_PESADO = 50_000;
 const AFORO_SEGURO = 25_000;
+/** Las puertas abren dos horas antes del partido (ver condiciones). */
+const HORAS_APERTURA_ANTES = 2;
 
 const AVISO_CARGA_PESADA: Record<number, string> = {
-  50_000: 'Sin Flyweight, cargar 50.000 sillas puede congelar la pestaña unos 10 segundos.',
+  50_000: 'Sin Flyweight, cargar 50.000 asientos puede congelar la pestaña unos 10 segundos.',
   100_000:
-    'Sin Flyweight, cargar 100.000 sillas puede congelar la pestaña entre 40 segundos y 1 minuto, y usar cientos de MB de memoria. Es justo el problema que resuelve el patrón.',
+    'Sin Flyweight, cargar 100.000 asientos puede congelar la pestaña entre 40 segundos y 1 minuto, y usar cientos de MB de memoria. Es justo el problema que resuelve el patrón.',
 };
 
 /**
- * Sitio de la boletería: evento, mapa de sillas, vista previa y compra.
+ * Sitio de venta de entradas: partido, mapa de asientos, vista previa y compra.
  *
  * Es igual para las dos versiones; cada página le pasa su propia función
- * `crearMapa`, que es lo único que cambia entre usar o no el patrón.
+ * `crearMapa`, que es lo único que cambia entre usar o no el patrón. Los
+ * tiempos se registran en la consola del navegador.
  */
 @Component({
   selector: 'app-boleteria',
@@ -54,146 +54,215 @@ const AVISO_CARGA_PESADA: Record<number, string> = {
     DatePipe,
     DecimalPipe,
     BoletaComponent,
-    ComparacionResultadosComponent,
+    EscudoEquipoComponent,
     LeyendaMapaComponent,
     MapaEstadioComponent,
     PanelSillaComponent,
     PasoDatosComponent,
     PasoPagoComponent,
     ResumenCompraComponent,
-    TarjetaMetricaComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <div class="space-y-8">
-      <!-- Evento -->
-      <section aria-labelledby="titulo-evento" class="overflow-hidden rounded-3xl bg-white shadow-sm ring-1 ring-slate-200">
-        <div class="h-1.5 bg-marca"></div>
-        <div class="flex flex-col gap-5 p-6 sm:p-8 md:flex-row md:items-end md:justify-between">
-          <div>
-            <p class="inline-flex rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-800 ring-1 ring-emerald-200">
-              Fútbol · Final
-            </p>
-            <h1 id="titulo-evento" class="mt-3 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
-              {{ evento.nombre }}
-            </h1>
-            <p class="mt-2 text-slate-700">
-              {{ evento.fecha | date: "EEEE d 'de' MMMM, h:mm a" }} · {{ evento.estadio }}, {{ evento.ciudad }}
-            </p>
-            <p class="mt-1 text-sm text-slate-600">Las puertas abren tres horas antes del partido.</p>
-          </div>
-          <div class="shrink-0 rounded-2xl bg-slate-50 px-5 py-4 ring-1 ring-slate-200">
-            <p class="text-xs text-slate-600">Boletas desde</p>
-            <p class="text-2xl font-bold text-slate-900">{{ precioMinimo | currency: 'COP' : 'symbol-narrow' : '1.0-0' }}</p>
-          </div>
+    <!-- Portada del partido, a todo el ancho -->
+    <section aria-labelledby="titulo-evento" class="no-imprimir relative isolate overflow-hidden bg-slate-800">
+      @if (!fotoFallida()) {
+        <img
+          [src]="evento.imagenEstadio"
+          alt=""
+          referrerpolicy="no-referrer"
+          class="absolute inset-0 -z-10 size-full object-cover"
+          (error)="fotoFallida.set(true)"
+        />
+      }
+      <div aria-hidden="true" class="absolute inset-0 -z-10 bg-gradient-to-t from-slate-950/95 via-slate-950/55 to-slate-950/10"></div>
+
+      <div class="mx-auto flex min-h-[26rem] max-w-7xl flex-col justify-end gap-6 px-4 pb-8 pt-28 sm:min-h-[34rem] sm:pb-12 lg:flex-row lg:items-end lg:justify-between">
+        <div class="max-w-4xl">
+          <p class="inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-xs font-semibold text-white ring-1 ring-white/30 backdrop-blur sm:text-sm">
+            {{ evento.competicion }} · {{ evento.jornada }}
+          </p>
+
+          <h1 id="titulo-evento" class="mt-4 flex flex-wrap items-center gap-x-4 gap-y-3 text-3xl font-extrabold tracking-tight text-white sm:text-5xl">
+            <span class="flex items-center gap-3">
+              <app-escudo-equipo class="size-12 sm:size-16" [equipo]="evento.local" />
+              {{ evento.local.nombre }}
+            </span>
+            <span class="text-xl font-semibold text-white/75 sm:text-3xl">vs</span>
+            <span class="flex items-center gap-3">
+              <app-escudo-equipo class="size-12 sm:size-16" [equipo]="evento.visitante" />
+              {{ evento.visitante.nombre }}
+            </span>
+          </h1>
+
+          <dl class="mt-5 flex flex-wrap gap-x-6 gap-y-2 text-sm text-white/90 sm:text-base">
+            <div class="flex gap-1.5">
+              <dt class="sr-only">Fecha</dt>
+              <dd class="first-letter:uppercase">{{ evento.fecha | date: "EEEE d 'de' MMMM 'de' y · HH:mm" : evento.zonaHoraria }}</dd>
+            </div>
+            <div class="flex gap-1.5">
+              <dt class="sr-only">Estadio</dt>
+              <dd>{{ evento.estadio }}, {{ evento.ciudad }}</dd>
+            </div>
+            <div class="flex gap-1.5">
+              <dt>Apertura de puertas:</dt>
+              <dd>{{ apertura | date: 'HH:mm' : evento.zonaHoraria }}</dd>
+            </div>
+          </dl>
         </div>
-      </section>
 
-      <!-- Pasos de la compra -->
-      <nav id="compra" aria-label="Pasos de la compra" class="scroll-mt-28">
-        <ol class="grid grid-cols-4 gap-2">
-          @for (paso of pasos; track paso.id; let i = $index) {
-            <li
-              class="flex flex-col gap-2 border-t-4 pt-2 text-xs sm:text-sm"
-              [class]="i <= indicePaso() ? 'border-marca' : 'border-slate-200'"
-              [attr.aria-current]="i === indicePaso() ? 'step' : null"
-            >
-              <span [class]="i === indicePaso() ? 'font-semibold text-slate-900' : i < indicePaso() ? 'text-slate-700' : 'text-slate-500'">
-                <span class="tabular-nums">{{ i + 1 }}.</span> {{ paso.nombre }}
-                @if (i < indicePaso()) {
-                  <span aria-label="(completado)">✓</span>
-                }
-              </span>
-            </li>
-          }
-        </ol>
-      </nav>
-
-      <!-- Paso 1: elegir silla. Se oculta (sin destruirse) para conservar el mapa dibujado. -->
-      <div [hidden]="compra.paso() !== 'silla'" class="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_24rem]">
-        <section aria-labelledby="titulo-mapa" class="space-y-4 rounded-2xl bg-white p-5 shadow-sm ring-1 ring-slate-200">
-          <div class="flex flex-wrap items-end justify-between gap-3">
-            <div>
-              <h2 id="titulo-mapa" class="text-lg font-semibold text-slate-900">Elige tu silla</h2>
-              <p class="text-sm text-slate-600">
-                {{ demo.aforo() | number }} sillas · haz clic en una silla del mapa para ver la cancha desde allí.
-              </p>
-            </div>
-            <form class="flex flex-wrap items-end gap-2" (submit)="$event.preventDefault(); buscarDisponible()">
-              <div>
-                <label for="localidad-buscada" class="block text-xs font-medium text-slate-700">Buscar silla disponible en</label>
-                <select
-                  id="localidad-buscada"
-                  class="mt-1 rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:outline-2 focus:outline-offset-1 focus:outline-marca"
-                  (change)="localidadBuscada.set($any($event.target).value)"
-                >
-                  @for (localidad of localidades; track localidad.id) {
-                    <option [value]="localidad.id" [selected]="localidad.id === localidadBuscada()">{{ localidad.nombre }} · {{ localidad.precio | currency: 'COP' : 'symbol-narrow' : '1.0-0' }}</option>
-                  }
-                </select>
-              </div>
-              <button
-                type="submit"
-                class="rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-marca disabled:opacity-50"
-                [disabled]="!mapa() || cargando()"
-              >
-                Buscar
-              </button>
-            </form>
+        <div class="flex shrink-0 items-center gap-4 rounded-2xl bg-white/95 p-4 shadow-xl">
+          <div>
+            <p class="text-xs text-slate-600">Entradas desde</p>
+            <p class="text-2xl font-bold text-slate-900">{{ precioMinimo | currency: 'EUR' : 'symbol' : '1.0-0' }}</p>
           </div>
-
-          @if (avisoBusqueda(); as aviso) {
-            <p role="status" class="rounded-lg bg-amber-50 p-3 text-sm text-amber-900 ring-1 ring-amber-200">{{ aviso }}</p>
-          }
-
-          @if (confirmacionPendiente()) {
-            <div role="alert" class="rounded-xl bg-amber-50 p-4 text-sm text-amber-950 ring-1 ring-amber-300">
-              <p class="flex gap-2">
-                <span aria-hidden="true">⚠</span>
-                <span><strong>Aviso de la demostración:</strong> {{ avisoCargaPesada() }}</span>
-              </p>
-              <div class="mt-3 flex flex-wrap gap-2">
-                <button
-                  type="button"
-                  class="rounded-lg bg-amber-900 px-4 py-2 font-medium text-white hover:bg-amber-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-900"
-                  (click)="confirmarCarga()"
-                >
-                  Cargar el mapa de todos modos
-                </button>
-                <button
-                  type="button"
-                  class="rounded-lg px-4 py-2 font-medium text-amber-950 ring-1 ring-amber-400 hover:bg-amber-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-900"
-                  (click)="usarAforoSeguro()"
-                >
-                  Usar {{ aforoSeguro | number }} sillas
-                </button>
-              </div>
-            </div>
-          }
-
-          <app-mapa-estadio
-            [descripcion]="descripcionMapa()"
-            [resaltado]="puntoSeleccionado()"
-            (clicEnPlano)="seleccionarEn($event)"
+          <button
+            type="button"
+            class="rounded-xl bg-marca px-5 py-3 text-sm font-semibold text-white shadow-sm hover:bg-marca-oscuro focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-marca"
+            (click)="irACompra()"
           >
-            @if (cargando()) {
-              <div class="absolute inset-0 grid place-items-center bg-white/75">
-                <div class="flex items-center gap-3 rounded-xl bg-white px-5 py-4 text-sm text-slate-800 shadow-lg ring-1 ring-slate-200">
-                  <span aria-hidden="true" class="size-5 animate-spin rounded-full border-2 border-slate-200 border-t-marca motion-reduce:animate-none"></span>
-                  Cargando el mapa del estadio…
+            Comprar entradas
+          </button>
+        </div>
+      </div>
+      <p class="absolute right-3 bottom-2 text-[10px] text-white/60">Foto: socios.com</p>
+    </section>
+
+    <div class="mx-auto max-w-7xl space-y-6 px-4 py-8 sm:py-10">
+      <!-- Encabezado y pasos de la compra -->
+      <div id="compra" class="scroll-mt-28 space-y-6">
+        <div>
+          <h2 class="text-2xl font-bold tracking-tight text-slate-900">Compra tus entradas</h2>
+          <p class="mt-1 text-slate-600">
+            Elige una localidad o haz clic en un asiento del mapa. Antes de pagar verás cómo se ve el
+            campo desde tu zona.
+          </p>
+        </div>
+
+        <nav aria-label="Pasos de la compra" class="rounded-2xl bg-white px-4 py-4 shadow-sm ring-1 ring-slate-200 sm:px-6">
+          <ol class="flex items-center gap-2 sm:gap-4">
+            @for (paso of pasos; track paso.id; let i = $index, ultimo = $last) {
+              <li class="flex flex-1 items-center gap-2 sm:gap-3" [attr.aria-current]="i === indicePaso() ? 'step' : null">
+                <span
+                  class="grid size-8 shrink-0 place-items-center rounded-full text-sm font-semibold"
+                  [class]="i < indicePaso() ? 'bg-marca text-white' : i === indicePaso() ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-500 ring-1 ring-slate-200'"
+                >
+                  @if (i < indicePaso()) {
+                    <span aria-hidden="true">✓</span><span class="sr-only">Completado:</span>
+                  } @else {
+                    {{ i + 1 }}
+                  }
+                </span>
+                <span
+                  class="hidden text-sm sm:inline"
+                  [class]="i === indicePaso() ? 'font-semibold text-slate-900' : 'text-slate-600'"
+                >
+                  {{ paso.nombre }}
+                </span>
+                @if (!ultimo) {
+                  <span aria-hidden="true" class="h-0.5 flex-1 rounded" [class]="i < indicePaso() ? 'bg-marca' : 'bg-slate-200'"></span>
+                }
+              </li>
+            }
+          </ol>
+          <p class="mt-2 text-sm font-semibold text-slate-900 sm:hidden">
+            Paso {{ indicePaso() + 1 }} de {{ pasos.length }}: {{ pasos[indicePaso()].nombre }}
+          </p>
+        </nav>
+      </div>
+
+      <!-- Paso 1: elegir asiento. Se oculta (sin destruirse) para conservar el mapa dibujado. -->
+      <div [hidden]="compra.paso() !== 'silla'" class="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_24rem]">
+        <div class="space-y-6">
+          <section aria-labelledby="titulo-localidades" class="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-slate-200">
+            <h3 id="titulo-localidades" class="text-base font-semibold text-slate-900">Localidades</h3>
+            <p class="text-sm text-slate-600">Elige una y te asignamos un asiento libre al azar.</p>
+            <ul class="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-3">
+              @for (localidad of localidades; track localidad.id) {
+                <li>
+                  <button
+                    type="button"
+                    class="flex w-full items-center gap-3 rounded-xl p-3 text-left ring-1 transition hover:bg-slate-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-marca disabled:cursor-not-allowed disabled:opacity-50"
+                    [class]="seleccion()?.detalle?.localidad?.id === localidad.id ? 'bg-slate-50 ring-2 ring-slate-900' : 'ring-slate-200'"
+                    [disabled]="!mapa() || cargando() || (libres().get(localidad.id) ?? 0) === 0"
+                    (click)="buscarDisponible(localidad.id)"
+                  >
+                    <span aria-hidden="true" class="h-10 w-1.5 shrink-0 rounded-full" [style.background-color]="localidad.color"></span>
+                    <span class="min-w-0 flex-1">
+                      <span class="block font-semibold text-slate-900">{{ localidad.nombre }}</span>
+                      <span class="block text-xs text-slate-600">
+                        @if (mapa()) {
+                          {{ libres().get(localidad.id) ?? 0 | number }} libres
+                        } @else {
+                          Cargando…
+                        }
+                      </span>
+                    </span>
+                    <span class="font-semibold tabular-nums text-slate-900">{{ localidad.precio | currency: 'EUR' : 'symbol' : '1.0-0' }}</span>
+                  </button>
+                </li>
+              }
+            </ul>
+            @if (avisoBusqueda(); as aviso) {
+              <p role="status" class="mt-3 rounded-lg bg-amber-50 p-3 text-sm text-amber-900 ring-1 ring-amber-200">{{ aviso }}</p>
+            }
+          </section>
+
+          <section aria-labelledby="titulo-mapa" class="space-y-4 rounded-2xl bg-white p-5 shadow-sm ring-1 ring-slate-200">
+            <div class="flex flex-wrap items-baseline justify-between gap-2">
+              <h3 id="titulo-mapa" class="text-base font-semibold text-slate-900">Mapa del estadio</h3>
+              <p class="text-sm text-slate-600">{{ demo.aforo() | number }} asientos · haz clic en uno para verlo</p>
+            </div>
+
+            @if (confirmacionPendiente()) {
+              <div role="alert" class="rounded-xl bg-amber-50 p-4 text-sm text-amber-950 ring-1 ring-amber-300">
+                <p class="flex gap-2">
+                  <span aria-hidden="true">⚠</span>
+                  <span><strong>Aviso de la demostración:</strong> {{ avisoCargaPesada() }}</span>
+                </p>
+                <div class="mt-3 flex flex-wrap gap-2">
+                  <button
+                    type="button"
+                    class="rounded-lg bg-amber-900 px-4 py-2 font-medium text-white hover:bg-amber-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-900"
+                    (click)="confirmarCarga()"
+                  >
+                    Cargar el mapa de todos modos
+                  </button>
+                  <button
+                    type="button"
+                    class="rounded-lg px-4 py-2 font-medium text-amber-950 ring-1 ring-amber-400 hover:bg-amber-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-900"
+                    (click)="usarAforoSeguro()"
+                  >
+                    Usar {{ aforoSeguro | number }} asientos
+                  </button>
                 </div>
               </div>
             }
-          </app-mapa-estadio>
 
-          @if (error(); as mensaje) {
-            <p role="alert" class="rounded-lg bg-red-50 p-3 text-sm text-red-800 ring-1 ring-red-200">
-              No se pudo cargar el mapa: {{ mensaje }}
-            </p>
-          }
+            <app-mapa-estadio
+              [descripcion]="descripcionMapa()"
+              [resaltado]="puntoSeleccionado()"
+              (clicEnPlano)="seleccionarEn($event)"
+            >
+              @if (cargando()) {
+                <div class="absolute inset-0 grid place-items-center bg-white/75">
+                  <div class="flex items-center gap-3 rounded-xl bg-white px-5 py-4 text-sm text-slate-800 shadow-lg ring-1 ring-slate-200">
+                    <span aria-hidden="true" class="size-5 animate-spin rounded-full border-2 border-slate-200 border-t-marca motion-reduce:animate-none"></span>
+                    Cargando el mapa del estadio…
+                  </div>
+                </div>
+              }
+            </app-mapa-estadio>
 
-          <app-leyenda-mapa />
-        </section>
+            @if (error(); as mensaje) {
+              <p role="alert" class="rounded-lg bg-red-50 p-3 text-sm text-red-800 ring-1 ring-red-200">
+                No se pudo cargar el mapa: {{ mensaje }}
+              </p>
+            }
+
+            <app-leyenda-mapa />
+          </section>
+        </div>
 
         <app-panel-silla [silla]="seleccion()?.detalle ?? null" [vista]="vista()" (continuar)="continuar()" />
       </div>
@@ -217,58 +286,6 @@ const AVISO_CARGA_PESADA: Record<number, string> = {
       }
 
       <p class="sr-only" role="status" aria-live="polite">{{ mensajeEstado() }}</p>
-
-      <!-- Panel de rendimiento (parte de la demostración, no del sitio real) -->
-      <section id="rendimiento" aria-labelledby="titulo-rendimiento" class="no-imprimir scroll-mt-28 space-y-5 rounded-3xl border-2 border-dashed border-amber-300 bg-amber-50/40 p-5 sm:p-6">
-        <div class="flex flex-wrap items-start justify-between gap-3">
-          <div>
-            <p class="text-xs font-semibold uppercase tracking-wide text-amber-800">Demostración del patrón</p>
-            <h2 id="titulo-rendimiento" class="text-xl font-bold text-slate-900">
-              Panel de rendimiento · {{ nombreVersion() }}
-            </h2>
-            <p class="mt-1 max-w-3xl text-sm text-slate-700">
-              Lo que pasa por dentro del sitio mientras compras. Los tiempos se miden con
-              <code class="text-slate-900">console.time</code> / <code class="text-slate-900">console.timeEnd</code>
-              (consola, F12) y con <code class="text-slate-900">performance.now()</code> para mostrarlos aquí.
-            </p>
-          </div>
-          <button
-            type="button"
-            class="rounded-lg bg-white px-4 py-2 text-sm font-medium text-slate-800 ring-1 ring-slate-300 hover:bg-slate-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-marca disabled:opacity-50"
-            [disabled]="cargando() || confirmacionPendiente()"
-            (click)="cargarMapa()"
-          >
-            Volver a cargar el mapa
-          </button>
-        </div>
-
-        @if (metricas(); as m) {
-          <div class="grid grid-cols-2 gap-3 md:grid-cols-4">
-            <app-tarjeta-metrica etiqueta="Crear objetos del mapa" [valor]="m.creacion" detalle="Aquí actúa el patrón" [destacada]="true" />
-            <app-tarjeta-metrica etiqueta="Dibujar el mapa" [valor]="m.render" />
-            <app-tarjeta-metrica etiqueta="Carga total" [valor]="m.total" [detalle]="'Incluye leer los datos: ' + m.carga" />
-            <app-tarjeta-metrica etiqueta="Memoria estimada" [valor]="m.memoria" [detalle]="'Mapa ' + m.memoriaMapa + ' + vistas ' + m.memoriaVistas" [destacada]="true" />
-            <app-tarjeta-metrica etiqueta="Copias de localidad" [valor]="m.copias" detalle="Precio, beneficios y términos" [destacada]="true" />
-            <app-tarjeta-metrica etiqueta="Iconos de silla" [valor]="m.iconos" detalle="Lienzos de 24 × 24 px" />
-            <app-tarjeta-metrica etiqueta="Vistas previas dibujadas" [valor]="m.vistas" [detalle]="m.vistasDetalle" [destacada]="true" />
-            <app-tarjeta-metrica etiqueta="Última vista previa" [valor]="m.ultimaVista" [detalle]="m.promedioVista" />
-          </div>
-          <p class="text-xs text-slate-600">
-            <strong class="text-slate-800">Sobre la memoria:</strong> JavaScript no permite medir cuánto
-            ocupa un objeto, así que se estima a partir de los datos que guarda cada versión con la
-            misma regla (textos, números y píxeles de iconos y vistas). Cambiar de versión recarga la
-            página para medir siempre con la memoria limpia.
-          </p>
-        } @else {
-          <p class="rounded-xl border border-dashed border-slate-300 bg-white p-5 text-sm text-slate-600">
-            El mapa todavía no se ha cargado en esta versión.
-          </p>
-        }
-
-        <ng-content />
-
-        <app-comparacion-resultados />
-      </section>
     </div>
   `,
 })
@@ -278,7 +295,6 @@ export class BoleteriaComponent {
   readonly crearMapa = input.required<(plano: EstadioGenerado) => MapaDeSillas>();
 
   private readonly benchmark = inject(BenchmarkService);
-  private readonly resultados = inject(ResultadosService);
   protected readonly demo = inject(DemoService);
   protected readonly compra = inject(CompraService);
   private readonly mapaEstadio = viewChild.required(MapaEstadioComponent);
@@ -288,21 +304,34 @@ export class BoleteriaComponent {
   protected readonly localidades = LOCALIDADES;
   protected readonly precioMinimo = Math.min(...LOCALIDADES.map((l) => l.precio));
   protected readonly aforoSeguro = AFORO_SEGURO;
+  protected readonly apertura = new Date(
+    new Date(EVENTO.fecha).getTime() - HORAS_APERTURA_ANTES * 3_600_000,
+  );
 
+  protected readonly fotoFallida = signal(false);
   protected readonly cargando = signal(false);
   protected readonly error = signal<string | null>(null);
   protected readonly confirmacionPendiente = signal(false);
   protected readonly mapa = signal<MapaDeSillas | null>(null);
   protected readonly seleccion = signal<SillaSeleccionada | null>(null);
   protected readonly vista = signal<Lienzo | null>(null);
-  protected readonly localidadBuscada = signal<LocalidadId>('GENERAL');
   protected readonly avisoBusqueda = signal<string | null>(null);
 
-  protected readonly nombreVersion = computed(() => NOMBRE_VERSION[this.version()]);
   protected readonly indicePaso = computed(() =>
     this.pasos.findIndex((p) => p.id === this.compra.paso()),
   );
   protected readonly avisoCargaPesada = computed(() => AVISO_CARGA_PESADA[this.demo.aforo()] ?? '');
+
+  /** Asientos disponibles por localidad en el mapa cargado. */
+  protected readonly libres = computed(() => {
+    const libres = new Map<LocalidadId, number>();
+    for (const silla of this.mapa()?.plano.sillas ?? []) {
+      if (silla.estado === 'DISPONIBLE') {
+        libres.set(silla.localidadId, (libres.get(silla.localidadId) ?? 0) + 1);
+      }
+    }
+    return libres;
+  });
 
   protected readonly puntoSeleccionado = computed<PuntoPlano | null>(() => {
     const detalle = this.seleccion()?.detalle;
@@ -311,45 +340,15 @@ export class BoleteriaComponent {
 
   protected readonly descripcionMapa = computed(() =>
     this.mapa()
-      ? `Mapa del estadio con ${this.demo.aforo().toLocaleString('es-CO')} sillas. Haz clic en una silla para ver su detalle, o usa «Buscar silla disponible».`
-      : 'Mapa del estadio sin sillas cargadas.',
+      ? `Mapa del estadio con ${this.demo.aforo().toLocaleString('es-ES')} asientos. Haz clic en un asiento para ver su detalle, o elige una localidad.`
+      : 'Mapa del estadio sin asientos cargados.',
   );
-
-  protected readonly metricas = computed(() => {
-    const version = this.version();
-    const r = version === 'antes' ? this.resultados.antes() : this.resultados.despues();
-    if (!r) return null;
-    const v = version === 'antes' ? this.resultados.vistasAntes() : this.resultados.vistasDespues();
-
-    const duracion = new DuracionPipe();
-    const megabytes = new MegabytesPipe();
-    const entero = (n: number) => n.toLocaleString('es-CO');
-    const memoriaVistas = v?.memoriaEstimadaBytes ?? 0;
-
-    return {
-      carga: duracion.transform(r.cargaDatosMs),
-      creacion: duracion.transform(r.creacionMs),
-      render: duracion.transform(r.renderMs),
-      total: duracion.transform(r.totalMs),
-      memoria: megabytes.transform(r.memoriaEstimadaBytes + memoriaVistas),
-      memoriaMapa: megabytes.transform(r.memoriaEstimadaBytes),
-      memoriaVistas: megabytes.transform(memoriaVistas),
-      copias: entero(r.copiasDeLocalidad),
-      iconos: entero(r.iconos),
-      vistas: entero(v?.renderizadas ?? 0),
-      vistasDetalle: v
-        ? `de ${entero(v.solicitadas)} silla${v.solicitadas === 1 ? '' : 's'} seleccionada${v.solicitadas === 1 ? '' : 's'}`
-        : 'Selecciona sillas en el mapa',
-      ultimaVista: v ? duracion.transform(v.ultimaMs) : '—',
-      promedioVista: v ? `Promedio: ${duracion.transform(v.totalMs / v.solicitadas)}` : 'Aún sin vistas',
-    };
-  });
 
   protected readonly mensajeEstado = computed(() => {
     if (this.cargando()) return 'Cargando el mapa del estadio…';
     const detalle = this.seleccion()?.detalle;
     return detalle
-      ? `Silla seleccionada: ${detalle.localidad.nombre}, sección ${detalle.seccion}, fila ${detalle.fila}, silla ${detalle.numero}.`
+      ? `Asiento seleccionado: ${detalle.localidad.nombre}, sección ${detalle.seccion}, fila ${detalle.fila}, asiento ${detalle.numero}.`
       : '';
   });
 
@@ -370,7 +369,71 @@ export class BoleteriaComponent {
     this.demo.cambiarAforo(AFORO_SEGURO);
   }
 
-  protected async cargarMapa(): Promise<void> {
+  protected seleccionarEn(punto: PuntoPlano): void {
+    const mapa = this.mapa();
+    if (!mapa || this.cargando()) return;
+
+    const silla = mapa.seleccionarSilla(punto.x, punto.y);
+    if (silla) this.aplicarSeleccion(mapa, silla);
+  }
+
+  /** Alternativa al clic (y accesible con teclado): un asiento libre al azar. */
+  protected buscarDisponible(localidad: LocalidadId): void {
+    const mapa = this.mapa();
+    if (!mapa) return;
+
+    const libres = mapa.plano.sillas.filter((s) => s.localidadId === localidad && s.estado === 'DISPONIBLE');
+    if (libres.length === 0) {
+      this.avisoBusqueda.set('No quedan asientos libres en esa localidad.');
+      return;
+    }
+
+    this.avisoBusqueda.set(null);
+    const registro = libres[Math.floor(Math.random() * libres.length)];
+    const silla = mapa.seleccionarSilla(registro.x, registro.y);
+    if (silla) this.aplicarSeleccion(mapa, silla);
+  }
+
+  protected continuar(): void {
+    const silla = this.seleccion()?.detalle;
+    if (!silla || silla.estado !== 'DISPONIBLE') return;
+
+    this.compra.elegirSilla(silla, this.demo.aforo());
+    this.irACompra();
+  }
+
+  protected irAPaso(paso: 'silla' | 'datos'): void {
+    this.compra.irA(paso);
+    this.irACompra();
+  }
+
+  protected nuevaCompra(): void {
+    this.compra.reiniciar();
+    this.seleccion.set(null);
+    this.vista.set(null);
+    this.irACompra();
+  }
+
+  protected irACompra(): void {
+    document.getElementById('compra')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  private prepararCarga(aforo: number): void {
+    this.compra.sincronizarAforo(aforo);
+
+    if (this.version() === 'antes' && aforo >= AFORO_PESADO) {
+      this.mapa.set(null);
+      this.seleccion.set(null);
+      this.vista.set(null);
+      this.confirmacionPendiente.set(true);
+      return;
+    }
+
+    this.confirmacionPendiente.set(false);
+    void this.cargarMapa();
+  }
+
+  private async cargarMapa(): Promise<void> {
     if (this.cargando()) return;
 
     this.cargando.set(true);
@@ -405,68 +468,7 @@ export class BoleteriaComponent {
     }
   }
 
-  protected seleccionarEn(punto: PuntoPlano): void {
-    const mapa = this.mapa();
-    if (!mapa || this.cargando()) return;
-
-    const silla = mapa.seleccionarSilla(punto.x, punto.y);
-    if (silla) this.aplicarSeleccion(mapa, silla);
-  }
-
-  /** Alternativa al clic (y accesible con teclado): una silla libre al azar. */
-  protected buscarDisponible(): void {
-    const mapa = this.mapa();
-    if (!mapa) return;
-
-    const localidad = this.localidadBuscada();
-    const libres = mapa.plano.sillas.filter((s) => s.localidadId === localidad && s.estado === 'DISPONIBLE');
-    if (libres.length === 0) {
-      this.avisoBusqueda.set('No quedan sillas disponibles en esa localidad.');
-      return;
-    }
-
-    this.avisoBusqueda.set(null);
-    const registro = libres[Math.floor(Math.random() * libres.length)];
-    const silla = mapa.seleccionarSilla(registro.x, registro.y);
-    if (silla) this.aplicarSeleccion(mapa, silla);
-  }
-
-  protected continuar(): void {
-    const silla = this.seleccion()?.detalle;
-    if (!silla || silla.estado !== 'DISPONIBLE') return;
-
-    this.compra.elegirSilla(silla, this.demo.aforo());
-    this.irArriba();
-  }
-
-  protected irAPaso(paso: 'silla' | 'datos'): void {
-    this.compra.irA(paso);
-    this.irArriba();
-  }
-
-  protected nuevaCompra(): void {
-    this.compra.reiniciar();
-    this.seleccion.set(null);
-    this.vista.set(null);
-    this.irArriba();
-  }
-
-  private prepararCarga(aforo: number): void {
-    this.compra.sincronizarAforo(aforo);
-
-    if (this.version() === 'antes' && aforo >= AFORO_PESADO) {
-      this.mapa.set(null);
-      this.seleccion.set(null);
-      this.vista.set(null);
-      this.confirmacionPendiente.set(true);
-      return;
-    }
-
-    this.confirmacionPendiente.set(false);
-    void this.cargarMapa();
-  }
-
-  /** Si había una silla elegida (por ejemplo, antes de cambiar de versión), se vuelve a mostrar. */
+  /** Si había un asiento elegido (por ejemplo, antes de cambiar de versión), se vuelve a mostrar. */
   private restaurarSeleccion(mapa: MapaDeSillas): void {
     const elegida = this.compra.silla();
     if (!elegida) return;
@@ -478,10 +480,6 @@ export class BoleteriaComponent {
   private aplicarSeleccion(mapa: MapaDeSillas, silla: SillaSeleccionada): void {
     this.seleccion.set(silla);
     this.vista.set(this.benchmark.medirVista(this.version(), mapa, silla));
-  }
-
-  private irArriba(): void {
-    document.getElementById('compra')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 }
 

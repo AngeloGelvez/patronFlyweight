@@ -4,14 +4,14 @@ import { DetalleSilla } from '../models/mapa-de-sillas';
 export type PasoCompra = 'silla' | 'datos' | 'pago' | 'boleta';
 
 export const PASOS_COMPRA: readonly { readonly id: PasoCompra; readonly nombre: string }[] = [
-  { id: 'silla', nombre: 'Elige tu silla' },
+  { id: 'silla', nombre: 'Elige tu asiento' },
   { id: 'datos', nombre: 'Tus datos' },
   { id: 'pago', nombre: 'Pago' },
-  { id: 'boleta', nombre: 'Tu boleta' },
+  { id: 'boleta', nombre: 'Tu entrada' },
 ];
 
-export type TipoDocumento = 'CC' | 'CE' | 'TI' | 'PA';
-export type MetodoPago = 'PSE' | 'TARJETA' | 'NEQUI';
+export type TipoDocumento = 'DNI' | 'NIE' | 'PASAPORTE';
+export type MetodoPago = 'TARJETA' | 'BIZUM' | 'PAYPAL';
 
 export interface DatosAsistente {
   readonly nombre: string;
@@ -23,7 +23,7 @@ export interface DatosAsistente {
 
 interface EstadoCompra {
   readonly paso: PasoCompra;
-  /** Aforo del mapa en el que se eligió la silla (cambia los ids de las sillas). */
+  /** Aforo del mapa en el que se eligió el asiento (cambia los ids de los asientos). */
   readonly aforo: number | null;
   readonly silla: DetalleSilla | null;
   readonly asistente: DatosAsistente | null;
@@ -46,8 +46,8 @@ const COMPRA_VACIA: EstadoCompra = {
 };
 
 /**
- * Estado del proceso de compra de una boleta. Es igual en las dos versiones:
- * el patrón solo cambia cómo se guardan las sillas del mapa.
+ * Estado del proceso de compra de una entrada. Es igual en las dos versiones:
+ * el patrón solo cambia cómo se guardan los asientos del mapa.
  *
  * Se guarda en `sessionStorage` para no perder el avance al cambiar de
  * versión (ese cambio recarga la página). Nada sale del navegador.
@@ -64,12 +64,13 @@ export class CompraService {
   readonly fechaCompra = computed(() => this.estado().fechaCompra);
 
   readonly precio = computed(() => this.silla()?.localidad.precio ?? 0);
-  readonly cargoServicio = computed(() => Math.round(this.precio() * PORCENTAJE_SERVICIO));
+  /** Gastos de gestión, redondeados a céntimos. */
+  readonly cargoServicio = computed(() => Math.round(this.precio() * PORCENTAJE_SERVICIO * 100) / 100);
   readonly total = computed(() => this.precio() + this.cargoServicio());
 
   /**
-   * Si el mapa se cargó con otro aforo, la silla elegida ya no existe en él.
-   * Una boleta ya comprada se conserva.
+   * Si el mapa se cargó con otro aforo, el asiento elegido ya no existe en él.
+   * Una entrada ya comprada se conserva.
    */
   sincronizarAforo(aforo: number): void {
     const { paso, aforo: aforoCompra } = this.estado();
@@ -118,7 +119,7 @@ export class CompraService {
   }
 }
 
-/** Código de la boleta, por ejemplo "MET-7K2Q9XA4". */
+/** Código de la entrada, por ejemplo "MET-7K2Q9XA". */
 function generarCodigo(semilla: string): string {
   let hash = 2166136261;
   for (const caracter of `${semilla}-${Date.now()}`) {

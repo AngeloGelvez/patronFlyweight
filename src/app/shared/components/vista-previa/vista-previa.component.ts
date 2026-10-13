@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, effect, ElementRef, input, viewChild } from '@angular/core';
 import { Lienzo } from '../../../core/render/icono-silla';
 
-/** Muestra la vista de la cancha desde la zona de la silla seleccionada. */
+/** Muestra la vista del campo desde la zona del asiento seleccionado. */
 @Component({
   selector: 'app-vista-previa',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -14,7 +14,7 @@ import { Lienzo } from '../../../core/render/icono-silla';
         height="450"
         class="block aspect-video h-auto w-full"
         role="img"
-        [attr.aria-label]="'Vista aproximada de la cancha desde ' + zona()"
+        [attr.aria-label]="'Vista aproximada del campo desde ' + zona()"
       ></canvas>
       @if (conPie()) {
         <figcaption class="flex items-center justify-between gap-2 px-3 py-2 text-xs text-slate-600">

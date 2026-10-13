@@ -25,13 +25,13 @@ const COLOR_LINEAS = 'rgba(255, 255, 255, 0.85)';
  * de identificar la localidad además del color (accesibilidad).
  */
 const ETIQUETAS_ZONAS: readonly { texto: string; x: number; y: number }[] = [
-  { texto: 'ORIENTAL', x: 900, y: 96 },
-  { texto: 'PREFERENCIAL', x: 900, y: 216 },
+  { texto: 'LATERAL ESTE', x: 900, y: 96 },
+  { texto: 'PREFERENCIA', x: 900, y: 216 },
   { texto: 'VIP', x: 900, y: 784 },
   { texto: 'PALCO', x: 900, y: 904 },
-  { texto: 'OCCIDENTAL', x: 560, y: 845 },
-  { texto: 'GENERAL NORTE', x: 250, y: 500 },
-  { texto: 'GENERAL SUR', x: 1550, y: 500 },
+  { texto: 'LATERAL OESTE', x: 560, y: 845 },
+  { texto: 'FONDO NORTE', x: 250, y: 500 },
+  { texto: 'FONDO SUR', x: 1550, y: 500 },
 ];
 
 /**

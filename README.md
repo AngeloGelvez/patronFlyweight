@@ -1,43 +1,51 @@
-# Patrón Flyweight · Boletería del Estadio Metropolitano
+# Patrón Flyweight · Venta de entradas del Estadio Metropolitano
 
-Aplicación Angular (solo frontend) que simula el sitio web de un estadio donde una persona compra su
-boleta: elige su silla en el mapa, ve **cómo se ve la cancha desde esa zona**, llena sus datos, paga
-(simulado) y recibe su boleta. Por dentro, el sitio puede funcionar **sin** o **con** el patrón de diseño
-[Flyweight](https://refactoring.guru/es/design-patterns/flyweight), y un panel mide la diferencia.
+Aplicación Angular (solo frontend) que simula la web de venta de entradas para el partido
+**Real Madrid vs Atlético de Madrid** (LaLiga EA Sports) en el Estadio Metropolitano. La persona elige su
+asiento en el mapa, ve **cómo se ve el campo desde esa zona**, escribe sus datos, paga (simulado) y recibe
+su entrada. Por dentro, el sitio puede funcionar **sin** o **con** el patrón de diseño
+[Flyweight](https://refactoring.guru/es/design-patterns/flyweight).
 
-> El estadio, el evento, los precios y las sillas son ficticios. No se realizan compras ni cobros.
+La explicación del patrón, el código antes y después y los resultados de rendimiento están en la
+presentación del proyecto; la app solo muestra la funcionalidad.
+
+> Sitio no oficial y sin relación con los clubes ni con el estadio. El partido, los precios y los
+> asientos son ficticios y no se realizan compras ni cobros. Los escudos se cargan desde Wikimedia y la
+> foto del estadio desde socios.com (no se guardan en el proyecto); las marcas pertenecen a sus
+> propietarios.
 
 ## Cómo se usa
 
 1. La **barra amarilla superior** es de la demostración: elige **Sin Flyweight** (`/antes`) o
-   **Con Flyweight** (`/despues`) y el aforo (10.000 a 100.000 sillas). Cambiar de versión recarga la
+   **Con Flyweight** (`/despues`) y el aforo (10.000 a 100.000 asientos). Cambiar de versión recarga la
    página para medir siempre con la memoria limpia; la compra en curso se conserva.
-2. El resto es el sitio: **Elige tu silla → Tus datos → Pago → Tu boleta**.
-3. Al seleccionar una silla aparece la **vista previa** de la cancha desde su zona.
-4. El **panel de rendimiento** (al final, o «Ver rendimiento ↓») muestra las métricas y la comparación.
+2. El resto es el sitio: **Elige tu asiento → Tus datos → Pago → Tu entrada**. Precios en euros,
+   documento DNI/NIE/pasaporte y pago simulado con tarjeta, Bizum o PayPal.
+3. Al seleccionar un asiento aparece la **vista previa** del campo desde su zona.
+4. Los tiempos de cada paso quedan en la **consola del navegador** (F12).
 
 ## El problema
 
-Cada silla tiene datos propios (sección, fila, número, posición, estado) y datos que comparte con muchas
-otras:
+Cada asiento tiene datos propios (sección, fila, número, posición, estado) y datos que comparte con
+muchos otros:
 
-| Dato compartido                                   | Compartido por            | Cantidad |
-| ------------------------------------------------- | ------------------------- | -------- |
-| Precio, beneficios, ~2 KB de términos e icono     | Todas las sillas de una **localidad** | 6        |
-| Vista previa de la cancha (imagen de 800 × 450)   | Todas las sillas de una **zona**       | 7        |
+| Dato compartido                                   | Compartido por                           | Cantidad |
+| ------------------------------------------------- | ---------------------------------------- | -------- |
+| Precio, beneficios, ~2 KB de condiciones e icono  | Todos los asientos de una **localidad**  | 6        |
+| Vista previa del campo (imagen de 800 × 450)      | Todos los asientos de una **zona**       | 7        |
 
-| Versión           | Qué guarda cada silla                                                                |
-| ----------------- | ------------------------------------------------------------------------------------ |
-| ❌ Sin Flyweight  | Su propia copia de la localidad, su propio icono y, al seleccionarla, su propia vista |
-| ✅ Con Flyweight  | Solo sus datos y referencias a la localidad y a la vista compartidas                  |
+| Versión           | Qué guarda cada asiento                                                               |
+| ----------------- | ------------------------------------------------------------------------------------- |
+| ❌ Sin Flyweight  | Su propia copia de la localidad, su propio icono y, al seleccionarlo, su propia vista |
+| ✅ Con Flyweight  | Solo sus datos y referencias a la localidad y a la vista compartidas                   |
 
-Las zonas con vista propia son General Norte, General Sur, Oriental, Occidental, Preferencial, VIP y
-Palco. Cada vista se dibuja en 3D con Canvas (cancha, líneas, arcos, graderías con los colores de cada
-localidad, público y reflectores) sin usar imágenes externas.
+Las zonas con vista propia son Fondo Norte, Fondo Sur, Lateral Este, Lateral Oeste, Preferencia, VIP y
+Palco. Cada vista se dibuja en 3D con Canvas (campo, líneas, porterías, gradas con los colores de cada
+localidad, público y focos) sin usar imágenes externas.
 
 ## Resultados medidos (Chrome, página recién cargada)
 
-| Sillas  | Versión       | Crear objetos | Dibujar | Copias de localidad | Memoria estimada del mapa |
+| Asientos | Versión      | Crear objetos | Dibujar | Copias de localidad | Memoria estimada del mapa |
 | ------- | ------------- | ------------- | ------- | ------------------- | ------------------------- |
 | 10.000  | Sin Flyweight | 1,1 s         | 218 ms  | 10.000              | 68 MB                     |
 | 10.000  | Con Flyweight | 5 ms          | 62 ms   | 6                   | 1 MB                      |
@@ -46,7 +54,7 @@ localidad, público y reflectores) sin usar imágenes externas.
 | 100.000 | Sin Flyweight | 36 s          | 4–18 s  | 100.000             | 683 MB                    |
 | 100.000 | Con Flyweight | 33 ms         | 601 ms  | 6                   | 9,5 MB                    |
 
-Vistas previas al seleccionar 4 sillas VIP:
+Vistas previas al seleccionar 4 asientos VIP:
 
 | Versión       | Vistas dibujadas | Tiempo por vista               | Memoria de vistas |
 | ------------- | ---------------- | ------------------------------ | ----------------- |
@@ -71,7 +79,7 @@ La versión sin el patrón está en [`src/app/antes/`](src/app/antes/). Ambas im
 
 [`BenchmarkService`](src/app/core/services/benchmark.service.ts) mide la carga del mapa en tres pasos (leer
 datos, crear objetos y dibujar) y cada vista previa. Cada medición usa `console.time` / `console.timeEnd`,
-que deja el registro en la consola de DevTools, y `performance.now()`, que entrega el número para el panel.
+que deja el registro en la consola de DevTools, y `performance.now()`, que entrega el número para guardarlo.
 Los resultados, el aforo y la compra en curso se guardan en `sessionStorage`.
 
 La **memoria estimada** se calcula a partir de los datos que guarda cada versión

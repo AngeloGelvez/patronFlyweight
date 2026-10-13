@@ -8,10 +8,10 @@ import { CodigoAccesoComponent } from '../codigo-acceso/codigo-acceso.component'
 import { nombreLocalidadYZona } from '../../etiquetas';
 import { VistaPreviaComponent } from '../vista-previa/vista-previa.component';
 
-/** Las puertas abren tres horas antes del evento (ver términos y condiciones). */
-const HORAS_APERTURA_ANTES = 3;
+/** Las puertas abren dos horas antes del partido (ver términos y condiciones). */
+const HORAS_APERTURA_ANTES = 2;
 
-/** Paso 4: boleta electrónica de la compra. */
+/** Paso 4: entrada electrónica de la compra. */
 @Component({
   selector: 'app-boleta',
   imports: [CurrencyPipe, DatePipe, CodigoAccesoComponent, VistaPreviaComponent],
@@ -24,7 +24,7 @@ const HORAS_APERTURA_ANTES = 3;
           <div>
             <h2 id="titulo-boleta" class="text-lg font-semibold text-emerald-950">¡Compra confirmada!</h2>
             <p class="text-sm text-emerald-900">
-              Tu boleta está lista. Preséntala en la puerta junto con tu documento.
+              Tu entrada está lista. Preséntala en el acceso junto con tu documento.
             </p>
           </div>
         </div>
@@ -32,16 +32,16 @@ const HORAS_APERTURA_ANTES = 3;
         <article class="overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-slate-200">
           <div class="grid gap-0 md:grid-cols-[1fr_15rem]">
             <div class="p-5 sm:p-6">
-              <p class="text-xs font-semibold uppercase tracking-wide text-marca">{{ evento.estadio }} · {{ evento.ciudad }}</p>
-              <h3 class="mt-1 text-xl font-bold text-slate-900">{{ evento.nombre }}</h3>
+              <p class="text-xs font-semibold uppercase tracking-wide text-marca">{{ evento.competicion }} · {{ evento.estadio }}, {{ evento.ciudad }}</p>
+              <h3 class="mt-1 text-xl font-bold text-slate-900">{{ evento.local.nombre }} vs {{ evento.visitante.nombre }}</h3>
               <p class="mt-1 text-sm text-slate-700">
-                {{ evento.fecha | date: "EEEE d 'de' MMMM 'de' y, h:mm a" }} · Puertas abren a las
-                {{ apertura() | date: 'h:mm a' }}
+                {{ evento.fecha | date: "EEEE d 'de' MMMM 'de' y, HH:mm" : evento.zonaHoraria }} · Apertura de puertas:
+                {{ apertura() | date: 'HH:mm' : evento.zonaHoraria }}
               </p>
 
               <dl class="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-4">
                 <div>
-                  <dt class="text-xs text-slate-500">Ingreso</dt>
+                  <dt class="text-xs text-slate-500">Acceso</dt>
                   <dd class="font-semibold text-slate-900">{{ zona().puerta }}</dd>
                 </div>
                 <div>
@@ -53,7 +53,7 @@ const HORAS_APERTURA_ANTES = 3;
                   <dd class="font-mono font-semibold text-slate-900">{{ s.fila }}</dd>
                 </div>
                 <div>
-                  <dt class="text-xs text-slate-500">Silla</dt>
+                  <dt class="text-xs text-slate-500">Asiento</dt>
                   <dd class="font-mono font-semibold text-slate-900">{{ s.numero }}</dd>
                 </div>
                 <div class="col-span-2">
@@ -84,7 +84,7 @@ const HORAS_APERTURA_ANTES = 3;
               <p class="font-mono text-sm font-semibold tracking-wider text-slate-900">{{ compra.codigo() }}</p>
               <p class="text-center text-xs text-slate-500">Código ilustrativo de la demostración</p>
               <p class="text-sm text-slate-700">
-                Pagado: <strong>{{ compra.total() | currency: 'COP' : 'symbol-narrow' : '1.0-0' }}</strong>
+                Pagado: <strong>{{ compra.total() | currency: 'EUR' : 'symbol' : '1.2-2' }}</strong>
               </p>
             </div>
           </div>
@@ -96,14 +96,14 @@ const HORAS_APERTURA_ANTES = 3;
             class="rounded-xl px-5 py-3 text-sm font-medium text-slate-700 ring-1 ring-slate-300 hover:bg-slate-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-marca"
             (click)="imprimir()"
           >
-            Imprimir boleta
+            Imprimir entrada
           </button>
           <button
             type="button"
             class="rounded-xl bg-marca px-6 py-3 text-sm font-semibold text-white shadow-sm hover:bg-marca-oscuro focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-marca"
             (click)="nuevaCompra.emit()"
           >
-            Comprar otra boleta
+            Comprar otra entrada
           </button>
         </div>
       </section>

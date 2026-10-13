@@ -47,9 +47,9 @@ describe('BenchmarkService', () => {
       renderizar: () => undefined,
     });
 
-    expect(console.time).toHaveBeenCalledWith('[Sin Flyweight] 500 sillas · 1. Cargar datos');
-    expect(console.time).toHaveBeenCalledWith('[Sin Flyweight] 500 sillas · 2. Crear objetos');
-    expect(console.time).toHaveBeenCalledWith('[Sin Flyweight] 500 sillas · 3. Dibujar mapa');
+    expect(console.time).toHaveBeenCalledWith('[Sin Flyweight] 500 asientos · 1. Cargar datos');
+    expect(console.time).toHaveBeenCalledWith('[Sin Flyweight] 500 asientos · 2. Crear objetos');
+    expect(console.time).toHaveBeenCalledWith('[Sin Flyweight] 500 asientos · 3. Dibujar mapa');
     expect(console.timeEnd).toHaveBeenCalledTimes(3);
     expect(console.groupEnd).toHaveBeenCalled();
   });

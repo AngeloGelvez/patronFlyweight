@@ -49,18 +49,12 @@ const VERSIONES: readonly { readonly id: VersionMapa; readonly nombre: string; r
             (change)="demo.cambiarAforo(+$any($event.target).value)"
           >
             @for (aforo of demo.aforos; track aforo) {
-              <option [value]="aforo" [selected]="aforo === demo.aforo()">{{ aforo | number }} sillas</option>
+              <option [value]="aforo" [selected]="aforo === demo.aforo()">{{ aforo | number }} asientos</option>
             }
           </select>
         </label>
 
-        <button
-          type="button"
-          class="ml-auto rounded-md px-2 py-1 font-medium text-amber-950 underline underline-offset-2 hover:bg-amber-100 focus-visible:outline-2 focus-visible:outline-amber-900"
-          (click)="verRendimiento()"
-        >
-          Ver rendimiento ↓
-        </button>
+        <p class="text-amber-900 sm:ml-auto">Tiempos medidos en la consola (F12)</p>
       </div>
     </div>
   `,
@@ -83,9 +77,5 @@ export class BarraDemoComponent {
       if (evento instanceof NavigationEnd) this.url.set(evento.urlAfterRedirects);
     });
     inject(DestroyRef).onDestroy(() => suscripcion.unsubscribe());
-  }
-
-  protected verRendimiento(): void {
-    document.getElementById('rendimiento')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 }
