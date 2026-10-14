@@ -5,8 +5,8 @@ import { VersionMapa } from '../../../core/models/resultado-ejecucion';
 import { DemoService } from '../../../core/services/demo.service';
 
 const VERSIONES: readonly { readonly id: VersionMapa; readonly nombre: string; readonly ruta: string }[] = [
-  { id: 'antes', nombre: 'Sin Flyweight', ruta: '/antes' },
-  { id: 'despues', nombre: 'Con Flyweight', ruta: '/despues' },
+  { id: 'antes', nombre: 'Sin Flyweight', ruta: '/patronFlyweight/antes' },
+  { id: 'despues', nombre: 'Con Flyweight', ruta: '/patronFlyweight/despues' },
 ];
 
 /**
