@@ -16,9 +16,10 @@ presentación del proyecto; la app solo muestra la funcionalidad.
 
 ## Cómo se usa
 
-1. La **barra amarilla superior** es de la demostración: elige **Sin Flyweight** (`/antes`) o
-   **Con Flyweight** (`/despues`) y el aforo (10.000 a 100.000 asientos). Cambiar de versión recarga la
-   página para medir siempre con la memoria limpia; la compra en curso se conserva.
+1. La **barra amarilla superior** es de la demostración: elige el patrón (**Flyweight** o
+   **Bridge**) y, dentro de Flyweight, **Sin Flyweight** (`/patronFlyweight/antes`) o
+   **Con Flyweight** (`/patronFlyweight/despues`) y el aforo (10.000 a 100.000 asientos). Cambiar de
+   versión recarga la página para medir siempre con la memoria limpia; la compra en curso se conserva.
 2. El resto es el sitio: **Elige tu asiento → Tus datos → Pago → Tu entrada**. Precios en euros,
    documento DNI/NIE/pasaporte y pago simulado con tarjeta, Bizum o PayPal.
 3. Al seleccionar un asiento aparece la **vista previa** del campo desde su zona.
@@ -91,10 +92,29 @@ No hay backend. La "base de datos" está en [`src/app/core/data/`](src/app/core/
 evento y un generador de sillas con semilla fija, que produce siempre las mismas sillas para que la
 comparación sea justa.
 
+## Segunda demostración · Patrón Bridge (`/patronBridge`)
+
+Independiente de la anterior y en su propia carpeta, [`src/app/bridge/`](src/app/bridge/). Aquí el
+estadio tiene solo **500 asientos**: [Bridge](https://refactoring.guru/es/design-patterns/bridge) no
+es un patrón de optimización, así que no hace falta un aforo grande.
+
+Separa **qué se dibuja** de **con qué se dibuja**, en dos jerarquías unidas por composición:
+
+| Abstracción · el qué | Implementación · el con qué |
+| --- | --- |
+| [`MapaDeAsientos`](src/app/bridge/vistas/mapa-de-asientos.ts) | [`DibujanteCanvas`](src/app/bridge/dibujantes/dibujante-canvas.ts) — rápido, se pixela al ampliar |
+| [`VistaDesdeElAsiento`](src/app/bridge/vistas/vista-desde-el-asiento.ts) | [`DibujanteSvg`](src/app/bridge/dibujantes/dibujante-svg.ts) — vectorial, imprime nítido |
+| [`EntradaImprimible`](src/app/bridge/vistas/entrada-imprimible.ts) | [`DibujanteTexto`](src/app/bridge/dibujantes/dibujante-texto.ts) — describe la escena con palabras |
+
+El puente está en [`VistaDelEstadio`](src/app/bridge/vistas/vista-del-estadio.ts): **guarda** un
+`Dibujante` en un atributo en vez de heredar de él. Por eso las dos jerarquías crecen por separado:
+**3 vistas + 3 motores = 6 clases que dan 9 combinaciones**, y añadir un motor nuevo es una sola
+clase en vez de tres. La página deja elegir cualquiera de las 9 y dibuja el resultado.
+
 ## Tecnologías
 
 Angular 19 (componentes standalone, signals, formularios reactivos y rutas con carga diferida),
-Tailwind CSS 4 y Canvas 2D.
+Tailwind CSS 4, Canvas 2D y SVG.
 
 ## Comandos
 

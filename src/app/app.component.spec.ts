@@ -15,11 +15,25 @@ describe('AppComponent', () => {
     expect(fixture.componentInstance).toBeTruthy();
   });
 
-  it('enlaza las dos versiones del mapa', () => {
+  /** Devuelve los destinos de los enlaces de una barra de navegación. */
+  function destinos(selector: string): (string | null)[] {
     const fixture = TestBed.createComponent(AppComponent);
     fixture.detectChanges();
-    const enlaces = (fixture.nativeElement as HTMLElement).querySelectorAll('nav a');
+    const enlaces = (fixture.nativeElement as HTMLElement).querySelectorAll(`${selector} a`);
+    return Array.from(enlaces).map((enlace) => enlace.getAttribute('href'));
+  }
 
-    expect(Array.from(enlaces).map((a) => a.getAttribute('href'))).toEqual(['/antes', '/despues']);
+  it('enlaza los dos patrones', () => {
+    expect(destinos('nav[aria-label="Patrón"]')).toEqual([
+      '/patronFlyweight/antes',
+      '/patronBridge',
+    ]);
+  });
+
+  it('enlaza las dos versiones del mapa fuera de la ruta de Bridge', () => {
+    expect(destinos('nav[aria-label="Implementación del mapa"]')).toEqual([
+      '/patronFlyweight/antes',
+      '/patronFlyweight/despues',
+    ]);
   });
 });
