@@ -1,0 +1,147 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2000 1220" width="2000" height="1220" font-family="Inter, Segoe UI, Arial, sans-serif"><title>Ejemplo 2 · Diagrama de clases · State + Observer (Pedido)</title><rect width="2000" height="1220" fill="#ffffff"/><defs>
+<marker id="tri" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="13" markerHeight="13" orient="auto"><path d="M1,1 L11,6 L1,11 z" fill="#ffffff" stroke="#334155" stroke-width="1.5"/></marker>
+<marker id="open" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="11" markerHeight="11" orient="auto"><path d="M1,1 L11,6 L1,11" fill="none" stroke="#334155" stroke-width="1.8"/></marker>
+<marker id="dia" viewBox="0 0 16 12" refX="1" refY="6" markerWidth="17" markerHeight="13" orient="auto"><path d="M1,6 L8,1 L15,6 L8,11 z" fill="#ffffff" stroke="#334155" stroke-width="1.5"/></marker>
+</defs>
+<rect x="700" y="40" width="480" height="141" rx="6" fill="#fffbeb" stroke="#b45309" stroke-width="2"/>
+<text x="940.0" y="62" text-anchor="middle" font-size="13" fill="#475569">«Observer · Sujeto»</text>
+<text x="940.0" y="82" text-anchor="middle" font-size="17" font-weight="700" fill="#0f172a">Sujeto</text>
+<line x1="700" y1="90" x2="1180" y2="90" stroke="#b45309" stroke-width="1.5"/>
+<text x="712" y="112" font-size="14" fill="#0f172a" font-family="monospace">-observadores: Set&lt;Observador&gt;</text>
+<line x1="700" y1="125" x2="1180" y2="125" stroke="#b45309" stroke-width="1.5"/>
+<text x="712" y="147" font-size="14" fill="#0f172a" font-family="monospace">+suscribir(o): () =&gt; void</text>
+<text x="712" y="168" font-size="14" fill="#0f172a" font-family="monospace">#notificar(evento)</text>
+<rect x="700" y="290" width="480" height="225" rx="6" fill="#ecfdf5" stroke="#047857" stroke-width="2"/>
+<text x="940.0" y="312" text-anchor="middle" font-size="13" fill="#475569">«State · Contexto + Sujeto»</text>
+<text x="940.0" y="332" text-anchor="middle" font-size="17" font-weight="700" fill="#0f172a">Pedido</text>
+<line x1="700" y1="340" x2="1180" y2="340" stroke="#047857" stroke-width="1.5"/>
+<text x="712" y="362" font-size="14" fill="#0f172a" font-family="monospace">-estado: EstadoPedido</text>
+<text x="712" y="383" font-size="14" fill="#0f172a" font-family="monospace">+entradas: ItemEntrada[]</text>
+<text x="712" y="404" font-size="14" fill="#0f172a" font-family="monospace">+diasParaElPartido: number</text>
+<line x1="700" y1="417" x2="1180" y2="417" stroke="#047857" stroke-width="1.5"/>
+<text x="712" y="439" font-size="14" fill="#0f172a" font-family="monospace">+anadirEntrada(item) · +quitarEntrada(pos)</text>
+<text x="712" y="460" font-size="14" fill="#0f172a" font-family="monospace">+confirmar() · +pagar() · +rechazarPago()</text>
+<text x="712" y="481" font-size="14" fill="#0f172a" font-family="monospace">+expirar() · +cancelar() · +reembolsar()</text>
+<text x="712" y="502" font-size="14" fill="#0f172a" font-family="monospace">+cambiarEstado(nuevo, detalle)  → notifica</text>
+<path d="M940.0,290 L940.0,181" fill="none" stroke="#334155" stroke-width="1.8" marker-end="url(#tri)"/>
+<rect x="40" y="290" width="540" height="183" rx="6" fill="#eff6ff" stroke="#2563eb" stroke-width="2"/>
+<text x="310.0" y="312" text-anchor="middle" font-size="13" fill="#475569">«abstract · Estado»</text>
+<text x="310.0" y="332" text-anchor="middle" font-size="17" font-weight="700" fill="#0f172a" font-style="italic">EstadoPedido</text>
+<line x1="40" y1="340" x2="580" y2="340" stroke="#2563eb" stroke-width="1.5"/>
+<line x1="40" y1="354" x2="580" y2="354" stroke="#2563eb" stroke-width="1.5"/>
+<text x="52" y="376" font-size="14" fill="#0f172a" font-family="monospace">+anadirEntrada(pedido, item) · +quitarEntrada(pedido, pos)</text>
+<text x="52" y="397" font-size="14" fill="#0f172a" font-family="monospace">+confirmar(pedido) · +pagar(pedido)</text>
+<text x="52" y="418" font-size="14" fill="#0f172a" font-family="monospace">+rechazarPago(pedido) · +expirar(pedido)</text>
+<text x="52" y="439" font-size="14" fill="#0f172a" font-family="monospace">+cancelar(pedido) · +reembolsar(pedido)</text>
+<text x="52" y="460" font-size="14" fill="#0f172a" font-family="monospace">#rechazar(accion): Resultado</text>
+<path d="M700,360 L580,360" fill="none" stroke="#334155" stroke-width="1.8" marker-end="url(#open)" marker-start="url(#dia)"/>
+<text x="640" y="350" text-anchor="middle" font-size="13" fill="#334155" paint-order="stroke" stroke="#ffffff" stroke-width="5" stroke-linejoin="round">estado actual</text>
+<rect x="1400" y="40" width="480" height="120" rx="6" fill="#eff6ff" stroke="#2563eb" stroke-width="2"/>
+<text x="1640.0" y="62" text-anchor="middle" font-size="13" fill="#475569">«interface · Observer»</text>
+<text x="1640.0" y="82" text-anchor="middle" font-size="17" font-weight="700" fill="#0f172a">Observador</text>
+<line x1="1400" y1="90" x2="1880" y2="90" stroke="#2563eb" stroke-width="1.5"/>
+<text x="1412" y="112" font-size="14" fill="#0f172a" font-family="monospace">+nombre: string</text>
+<line x1="1400" y1="125" x2="1880" y2="125" stroke="#2563eb" stroke-width="1.5"/>
+<text x="1412" y="147" font-size="14" fill="#0f172a" font-family="monospace">+actualizar(evento: EventoPedido)</text>
+<path d="M1180,100 L1400,100" fill="none" stroke="#334155" stroke-width="1.8" marker-end="url(#open)" marker-start="url(#dia)"/>
+<text x="1290" y="90" text-anchor="middle" font-size="13" fill="#334155" paint-order="stroke" stroke="#ffffff" stroke-width="5" stroke-linejoin="round">notifica a  0..*</text>
+<rect x="1450" y="290" width="430" height="100" rx="6" fill="#fffbeb" stroke="#b45309" stroke-width="2"/>
+<text x="1665.0" y="312" text-anchor="middle" font-size="13" fill="#475569">«Observador concreto»</text>
+<text x="1665.0" y="332" text-anchor="middle" font-size="17" font-weight="700" fill="#0f172a">NotificadorCorreo</text>
+<line x1="1450" y1="340" x2="1880" y2="340" stroke="#b45309" stroke-width="1.5"/>
+<text x="1462" y="362" font-size="14" fill="#0f172a" font-family="monospace">+correos: Signal&lt;Correo[]&gt;</text>
+<line x1="1450" y1="375" x2="1880" y2="375" stroke="#b45309" stroke-width="1.5"/>
+<rect x="1450" y="425" width="430" height="120" rx="6" fill="#fffbeb" stroke="#b45309" stroke-width="2"/>
+<text x="1665.0" y="447" text-anchor="middle" font-size="13" fill="#475569">«Observador concreto»</text>
+<text x="1665.0" y="467" text-anchor="middle" font-size="17" font-weight="700" fill="#0f172a">PanelTaquilla</text>
+<line x1="1450" y1="475" x2="1880" y2="475" stroke="#b45309" stroke-width="1.5"/>
+<text x="1462" y="497" font-size="14" fill="#0f172a" font-family="monospace">+ingresos · +entradasVendidas</text>
+<text x="1462" y="518" font-size="14" fill="#0f172a" font-family="monospace">+pedidosPorEstado</text>
+<line x1="1450" y1="531" x2="1880" y2="531" stroke="#b45309" stroke-width="1.5"/>
+<rect x="1450" y="560" width="430" height="100" rx="6" fill="#fffbeb" stroke="#b45309" stroke-width="2"/>
+<text x="1665.0" y="582" text-anchor="middle" font-size="13" fill="#475569">«Observador concreto»</text>
+<text x="1665.0" y="602" text-anchor="middle" font-size="17" font-weight="700" fill="#0f172a">RegistroAuditoria</text>
+<line x1="1450" y1="610" x2="1880" y2="610" stroke="#b45309" stroke-width="1.5"/>
+<text x="1462" y="632" font-size="14" fill="#0f172a" font-family="monospace">+lineas: Signal&lt;Linea[]&gt;</text>
+<line x1="1450" y1="645" x2="1880" y2="645" stroke="#b45309" stroke-width="1.5"/>
+<rect x="1450" y="695" width="430" height="100" rx="6" fill="#fffbeb" stroke="#b45309" stroke-width="2"/>
+<text x="1665.0" y="717" text-anchor="middle" font-size="13" fill="#475569">«Observador concreto»</text>
+<text x="1665.0" y="737" text-anchor="middle" font-size="17" font-weight="700" fill="#0f172a">AlertaAntifraude</text>
+<line x1="1450" y1="745" x2="1880" y2="745" stroke="#b45309" stroke-width="1.5"/>
+<text x="1462" y="767" font-size="14" fill="#0f172a" font-family="monospace">+alertas: Signal&lt;string[]&gt;</text>
+<line x1="1450" y1="780" x2="1880" y2="780" stroke="#b45309" stroke-width="1.5"/>
+<path d="M1425,765 L1425,160" fill="none" stroke="#334155" stroke-width="1.8" stroke-dasharray="7 5" marker-end="url(#tri)"/>
+<path d="M1450,340.0 L1425,340.0" fill="none" stroke="#334155" stroke-width="1.8" stroke-dasharray="7 5"/>
+<path d="M1450,485.0 L1425,485.0" fill="none" stroke="#334155" stroke-width="1.8" stroke-dasharray="7 5"/>
+<path d="M1450,610.0 L1425,610.0" fill="none" stroke="#334155" stroke-width="1.8" stroke-dasharray="7 5"/>
+<path d="M1450,745.0 L1425,745.0" fill="none" stroke="#334155" stroke-width="1.8" stroke-dasharray="7 5"/>
+<rect x="1450" y="880" width="430" height="141" rx="6" fill="#faf5ff" stroke="#7c3aed" stroke-width="2"/>
+<text x="1665.0" y="902" text-anchor="middle" font-size="13" fill="#475569">«datos · foto del cambio»</text>
+<text x="1665.0" y="922" text-anchor="middle" font-size="17" font-weight="700" fill="#0f172a">EventoPedido</text>
+<line x1="1450" y1="930" x2="1880" y2="930" stroke="#7c3aed" stroke-width="1.5"/>
+<text x="1462" y="952" font-size="14" fill="#0f172a" font-family="monospace">+tipo · +pedidoId</text>
+<text x="1462" y="973" font-size="14" fill="#0f172a" font-family="monospace">+de → +a (EstadoPedidoId)</text>
+<text x="1462" y="994" font-size="14" fill="#0f172a" font-family="monospace">+total · +entradas · +momento</text>
+<line x1="1450" y1="1007" x2="1880" y2="1007" stroke="#7c3aed" stroke-width="1.5"/>
+<path d="M1880,100 L1935,100 L1935,1000 L1880,1000" fill="none" stroke="#334155" stroke-width="1.8" stroke-dasharray="7 5" marker-end="url(#open)"/>
+<text x="1966" y="560" text-anchor="middle" font-size="13" fill="#334155" paint-order="stroke" stroke="#ffffff" stroke-width="5" stroke-linejoin="round">recibe</text>
+<path d="M1180,410 L1300,410 L1300,1000 L1450,1000" fill="none" stroke="#334155" stroke-width="1.8" stroke-dasharray="7 5" marker-end="url(#open)"/>
+<text x="1300" y="1020" text-anchor="middle" font-size="13" fill="#334155" paint-order="stroke" stroke="#ffffff" stroke-width="5" stroke-linejoin="round">crea y envía</text>
+<rect x="40" y="640" width="205" height="162" rx="6" fill="#ffffff" stroke="#64748b" stroke-width="2"/>
+<text x="142.5" y="662" text-anchor="middle" font-size="13" fill="#475569">«Estado concreto»</text>
+<text x="142.5" y="682" text-anchor="middle" font-size="17" font-weight="700" fill="#0f172a">EnCarrito</text>
+<line x1="40" y1="690" x2="245" y2="690" stroke="#64748b" stroke-width="1.5"/>
+<line x1="40" y1="704" x2="245" y2="704" stroke="#64748b" stroke-width="1.5"/>
+<text x="52" y="726" font-size="14" fill="#0f172a" font-family="monospace">+anadirEntrada()</text>
+<text x="52" y="747" font-size="14" fill="#0f172a" font-family="monospace">+quitarEntrada()</text>
+<text x="52" y="768" font-size="14" fill="#0f172a" font-family="monospace">+confirmar()</text>
+<text x="52" y="789" font-size="14" fill="#0f172a" font-family="monospace">+cancelar()</text>
+<rect x="330" y="640" width="205" height="162" rx="6" fill="#ffffff" stroke="#64748b" stroke-width="2"/>
+<text x="432.5" y="662" text-anchor="middle" font-size="13" fill="#475569">«Estado concreto»</text>
+<text x="432.5" y="682" text-anchor="middle" font-size="17" font-weight="700" fill="#0f172a">PendienteDePago</text>
+<line x1="330" y1="690" x2="535" y2="690" stroke="#64748b" stroke-width="1.5"/>
+<line x1="330" y1="704" x2="535" y2="704" stroke="#64748b" stroke-width="1.5"/>
+<text x="342" y="726" font-size="14" fill="#0f172a" font-family="monospace">+pagar()</text>
+<text x="342" y="747" font-size="14" fill="#0f172a" font-family="monospace">+rechazarPago()</text>
+<text x="342" y="768" font-size="14" fill="#0f172a" font-family="monospace">+expirar()</text>
+<text x="342" y="789" font-size="14" fill="#0f172a" font-family="monospace">+cancelar()</text>
+<rect x="620" y="640" width="205" height="160" rx="6" fill="#ffffff" stroke="#64748b" stroke-width="2"/>
+<text x="722.5" y="662" text-anchor="middle" font-size="13" fill="#475569">«Estado concreto»</text>
+<text x="722.5" y="682" text-anchor="middle" font-size="17" font-weight="700" fill="#0f172a">Pagado</text>
+<line x1="620" y1="690" x2="825" y2="690" stroke="#64748b" stroke-width="1.5"/>
+<line x1="620" y1="704" x2="825" y2="704" stroke="#64748b" stroke-width="1.5"/>
+<text x="632" y="726" font-size="14" fill="#0f172a" font-family="monospace">+reembolsar()</text>
+<rect x="910" y="640" width="205" height="160" rx="6" fill="#f1f5f9" stroke="#64748b" stroke-width="2"/>
+<text x="1012.5" y="662" text-anchor="middle" font-size="13" fill="#475569">«Estado concreto · final»</text>
+<text x="1012.5" y="682" text-anchor="middle" font-size="17" font-weight="700" fill="#0f172a">Reembolsado</text>
+<line x1="910" y1="690" x2="1115" y2="690" stroke="#64748b" stroke-width="1.5"/>
+<line x1="910" y1="704" x2="1115" y2="704" stroke="#64748b" stroke-width="1.5"/>
+<text x="922" y="726" font-size="14" fill="#0f172a" font-family="monospace">(sin acciones)</text>
+<rect x="330" y="960" width="205" height="99" rx="6" fill="#f1f5f9" stroke="#64748b" stroke-width="2"/>
+<text x="432.5" y="982" text-anchor="middle" font-size="13" fill="#475569">«Estado concreto · final»</text>
+<text x="432.5" y="1002" text-anchor="middle" font-size="17" font-weight="700" fill="#0f172a">Cancelado</text>
+<line x1="330" y1="1010" x2="535" y2="1010" stroke="#64748b" stroke-width="1.5"/>
+<line x1="330" y1="1024" x2="535" y2="1024" stroke="#64748b" stroke-width="1.5"/>
+<text x="342" y="1046" font-size="14" fill="#0f172a" font-family="monospace">(sin acciones)</text>
+<path d="M142.5,640 L142.5,590 L1012.5,590" fill="none" stroke="#334155" stroke-width="1.8"/>
+<path d="M432.5,640 L432.5,590" fill="none" stroke="#334155" stroke-width="1.8"/>
+<path d="M722.5,640 L722.5,590" fill="none" stroke="#334155" stroke-width="1.8"/>
+<path d="M310.0,590 L310.0,473" fill="none" stroke="#334155" stroke-width="1.8" marker-end="url(#tri)"/>
+<path d="M372.5,960 L372.5,600" fill="none" stroke="none"/>
+<path d="M245,720 L330,720" fill="none" stroke="#334155" stroke-width="1.8" stroke-dasharray="7 5" marker-end="url(#open)"/>
+<text x="287.5" y="710" text-anchor="middle" font-size="13" fill="#334155" paint-order="stroke" stroke="#ffffff" stroke-width="5" stroke-linejoin="round">confirmar</text>
+<path d="M535,720 L620,720" fill="none" stroke="#334155" stroke-width="1.8" stroke-dasharray="7 5" marker-end="url(#open)"/>
+<text x="577.5" y="710" text-anchor="middle" font-size="13" fill="#334155" paint-order="stroke" stroke="#ffffff" stroke-width="5" stroke-linejoin="round">pagar</text>
+<path d="M825,720 L910,720" fill="none" stroke="#334155" stroke-width="1.8" stroke-dasharray="7 5" marker-end="url(#open)"/>
+<text x="867.5" y="710" text-anchor="middle" font-size="13" fill="#334155" paint-order="stroke" stroke="#ffffff" stroke-width="5" stroke-linejoin="round">reembolsar</text>
+<path d="M142.5,800 L142.5,1005 L330,1005" fill="none" stroke="#334155" stroke-width="1.8" stroke-dasharray="7 5" marker-end="url(#open)"/>
+<text x="200" y="1026" text-anchor="middle" font-size="13" fill="#334155" paint-order="stroke" stroke="#ffffff" stroke-width="5" stroke-linejoin="round">cancelar</text>
+<path d="M432.5,800 L432.5,960" fill="none" stroke="#334155" stroke-width="1.8" stroke-dasharray="7 5" marker-end="url(#open)"/>
+<text x="444.5" y="905" text-anchor="start" font-size="13" fill="#334155" paint-order="stroke" stroke="#ffffff" stroke-width="5" stroke-linejoin="round">cancelar · expirar · 3.er rechazo</text>
+<rect x="40" y="1100" width="620" height="60" rx="6" fill="#fffbeb" stroke="#b45309" stroke-dasharray="5 4"/>
+<text x="52" y="1124" font-size="14" fill="#0f172a" font-family="monospace">// Un estado puede llevar cuenta: tras 3 pagos rechazados,</text>
+<text x="52" y="1145" font-size="14" fill="#0f172a" font-family="monospace">// PendienteDePago pasa solo a Cancelado.</text>
+<rect x="700" y="1100" width="700" height="60" rx="6" fill="#fffbeb" stroke="#b45309" stroke-dasharray="5 4"/>
+<text x="712" y="1124" font-size="14" fill="#0f172a" font-family="monospace">// State decide QUÉ pasa. Observer avisa DESPUÉS de que pasó:</text>
+<text x="712" y="1145" font-size="14" fill="#0f172a" font-family="monospace">cambiarEstado() { this.estado = nuevo; this.notificar(evento); }</text>
+</svg>

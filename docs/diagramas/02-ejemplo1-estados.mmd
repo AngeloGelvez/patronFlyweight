@@ -1,0 +1,8 @@
+stateDiagram-v2
+    direction LR
+    [*] --> Disponible
+    Disponible --> Reservada : reservar
+    Reservada --> Disponible : cancelar
+    Reservada --> Pagada : pagar
+    Pagada --> Usada : entrar
+    Usada --> [*]

@@ -1,0 +1,85 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1560 800" width="1560" height="800" font-family="Inter, Segoe UI, Arial, sans-serif"><title>Ejemplo 1 · Diagrama de clases · State (Entrada)</title><rect width="1560" height="800" fill="#ffffff"/><defs>
+<marker id="tri" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="13" markerHeight="13" orient="auto"><path d="M1,1 L11,6 L1,11 z" fill="#ffffff" stroke="#334155" stroke-width="1.5"/></marker>
+<marker id="open" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="11" markerHeight="11" orient="auto"><path d="M1,1 L11,6 L1,11" fill="none" stroke="#334155" stroke-width="1.8"/></marker>
+<marker id="dia" viewBox="0 0 16 12" refX="1" refY="6" markerWidth="17" markerHeight="13" orient="auto"><path d="M1,6 L8,1 L15,6 L8,11 z" fill="#ffffff" stroke="#334155" stroke-width="1.5"/></marker>
+</defs>
+<rect x="40" y="40" width="440" height="225" rx="6" fill="#ecfdf5" stroke="#047857" stroke-width="2"/>
+<text x="260.0" y="62" text-anchor="middle" font-size="13" fill="#475569">«Contexto»</text>
+<text x="260.0" y="82" text-anchor="middle" font-size="17" font-weight="700" fill="#0f172a">Entrada</text>
+<line x1="40" y1="90" x2="480" y2="90" stroke="#047857" stroke-width="1.5"/>
+<text x="52" y="112" font-size="14" fill="#0f172a" font-family="monospace">+datos: DatosEntrada</text>
+<text x="52" y="133" font-size="14" fill="#0f172a" font-family="monospace">-estado: EstadoEntrada</text>
+<line x1="40" y1="146" x2="480" y2="146" stroke="#047857" stroke-width="1.5"/>
+<text x="52" y="168" font-size="14" fill="#0f172a" font-family="monospace">+reservar(): Resultado</text>
+<text x="52" y="189" font-size="14" fill="#0f172a" font-family="monospace">+pagar(): Resultado</text>
+<text x="52" y="210" font-size="14" fill="#0f172a" font-family="monospace">+cancelar(): Resultado</text>
+<text x="52" y="231" font-size="14" fill="#0f172a" font-family="monospace">+entrar(): Resultado</text>
+<text x="52" y="252" font-size="14" fill="#0f172a" font-family="monospace">+cambiarEstado(nuevo)</text>
+<rect x="600" y="40" width="470" height="204" rx="6" fill="#eff6ff" stroke="#2563eb" stroke-width="2"/>
+<text x="835.0" y="62" text-anchor="middle" font-size="13" fill="#475569">«abstract · Estado»</text>
+<text x="835.0" y="82" text-anchor="middle" font-size="17" font-weight="700" fill="#0f172a" font-style="italic">EstadoEntrada</text>
+<line x1="600" y1="90" x2="1070" y2="90" stroke="#2563eb" stroke-width="1.5"/>
+<text x="612" y="112" font-size="14" fill="#0f172a" font-family="monospace">+id · +nombre · +descripcion</text>
+<line x1="600" y1="125" x2="1070" y2="125" stroke="#2563eb" stroke-width="1.5"/>
+<text x="612" y="147" font-size="14" fill="#0f172a" font-family="monospace">+reservar(entrada): Resultado</text>
+<text x="612" y="168" font-size="14" fill="#0f172a" font-family="monospace">+pagar(entrada): Resultado</text>
+<text x="612" y="189" font-size="14" fill="#0f172a" font-family="monospace">+cancelar(entrada): Resultado</text>
+<text x="612" y="210" font-size="14" fill="#0f172a" font-family="monospace">+entrar(entrada): Resultado</text>
+<text x="612" y="231" font-size="14" fill="#0f172a" font-family="monospace">#rechazar(accion): Resultado</text>
+<rect x="1190" y="40" width="330" height="120" rx="6" fill="#faf5ff" stroke="#7c3aed" stroke-width="2"/>
+<text x="1355.0" y="62" text-anchor="middle" font-size="13" fill="#475569">«interface»</text>
+<text x="1355.0" y="82" text-anchor="middle" font-size="17" font-weight="700" fill="#0f172a">Resultado</text>
+<line x1="1190" y1="90" x2="1520" y2="90" stroke="#7c3aed" stroke-width="1.5"/>
+<text x="1202" y="112" font-size="14" fill="#0f172a" font-family="monospace">+ok: boolean</text>
+<text x="1202" y="133" font-size="14" fill="#0f172a" font-family="monospace">+mensaje: string</text>
+<line x1="1190" y1="146" x2="1520" y2="146" stroke="#7c3aed" stroke-width="1.5"/>
+<path d="M480,120 L600,120" fill="none" stroke="#334155" stroke-width="1.8" marker-end="url(#open)" marker-start="url(#dia)"/>
+<text x="540" y="110" text-anchor="middle" font-size="13" fill="#334155" paint-order="stroke" stroke="#ffffff" stroke-width="5" stroke-linejoin="round">estado actual</text>
+<path d="M1070,120 L1190,120" fill="none" stroke="#334155" stroke-width="1.8" stroke-dasharray="7 5" marker-end="url(#open)"/>
+<text x="1130" y="110" text-anchor="middle" font-size="13" fill="#334155" paint-order="stroke" stroke="#ffffff" stroke-width="5" stroke-linejoin="round">devuelve</text>
+<rect x="40" y="480" width="300" height="120" rx="6" fill="#ffffff" stroke="#64748b" stroke-width="2"/>
+<text x="190.0" y="502" text-anchor="middle" font-size="13" fill="#475569">«Estado concreto»</text>
+<text x="190.0" y="522" text-anchor="middle" font-size="17" font-weight="700" fill="#0f172a">Disponible</text>
+<line x1="40" y1="530" x2="340" y2="530" stroke="#64748b" stroke-width="1.5"/>
+<line x1="40" y1="544" x2="340" y2="544" stroke="#64748b" stroke-width="1.5"/>
+<text x="52" y="566" font-size="14" fill="#0f172a" font-family="monospace">+reservar(entrada)</text>
+<rect x="430" y="480" width="300" height="120" rx="6" fill="#ffffff" stroke="#64748b" stroke-width="2"/>
+<text x="580.0" y="502" text-anchor="middle" font-size="13" fill="#475569">«Estado concreto»</text>
+<text x="580.0" y="522" text-anchor="middle" font-size="17" font-weight="700" fill="#0f172a">Reservada</text>
+<line x1="430" y1="530" x2="730" y2="530" stroke="#64748b" stroke-width="1.5"/>
+<line x1="430" y1="544" x2="730" y2="544" stroke="#64748b" stroke-width="1.5"/>
+<text x="442" y="566" font-size="14" fill="#0f172a" font-family="monospace">+pagar(entrada)</text>
+<text x="442" y="587" font-size="14" fill="#0f172a" font-family="monospace">+cancelar(entrada)</text>
+<rect x="820" y="480" width="300" height="120" rx="6" fill="#ffffff" stroke="#64748b" stroke-width="2"/>
+<text x="970.0" y="502" text-anchor="middle" font-size="13" fill="#475569">«Estado concreto»</text>
+<text x="970.0" y="522" text-anchor="middle" font-size="17" font-weight="700" fill="#0f172a">Pagada</text>
+<line x1="820" y1="530" x2="1120" y2="530" stroke="#64748b" stroke-width="1.5"/>
+<line x1="820" y1="544" x2="1120" y2="544" stroke="#64748b" stroke-width="1.5"/>
+<text x="832" y="566" font-size="14" fill="#0f172a" font-family="monospace">+entrar(entrada)</text>
+<rect x="1210" y="480" width="300" height="120" rx="6" fill="#f1f5f9" stroke="#64748b" stroke-width="2"/>
+<text x="1360.0" y="502" text-anchor="middle" font-size="13" fill="#475569">«Estado concreto · final»</text>
+<text x="1360.0" y="522" text-anchor="middle" font-size="17" font-weight="700" fill="#0f172a">Usada</text>
+<line x1="1210" y1="530" x2="1510" y2="530" stroke="#64748b" stroke-width="1.5"/>
+<line x1="1210" y1="544" x2="1510" y2="544" stroke="#64748b" stroke-width="1.5"/>
+<text x="1222" y="566" font-size="14" fill="#0f172a" font-family="monospace">(no sobrescribe nada)</text>
+<path d="M190.0,480 L190.0,400 L1360.0,400" fill="none" stroke="#334155" stroke-width="1.8"/>
+<path d="M580.0,480 L580.0,400" fill="none" stroke="#334155" stroke-width="1.8"/>
+<path d="M970.0,480 L970.0,400" fill="none" stroke="#334155" stroke-width="1.8"/>
+<path d="M1360.0,480 L1360.0,400" fill="none" stroke="#334155" stroke-width="1.8"/>
+<path d="M835.0,400 L835.0,244" fill="none" stroke="#334155" stroke-width="1.8" marker-end="url(#tri)"/>
+<path d="M340,535 L430,535" fill="none" stroke="#334155" stroke-width="1.8" stroke-dasharray="7 5" marker-end="url(#open)"/>
+<text x="380" y="526" text-anchor="middle" font-size="13" fill="#334155" paint-order="stroke" stroke="#ffffff" stroke-width="5" stroke-linejoin="round">reservar</text>
+<path d="M430,575 L340,575" fill="none" stroke="#334155" stroke-width="1.8" stroke-dasharray="7 5" marker-end="url(#open)"/>
+<text x="380" y="596" text-anchor="middle" font-size="13" fill="#334155" paint-order="stroke" stroke="#ffffff" stroke-width="5" stroke-linejoin="round">cancelar</text>
+<path d="M730,555 L820,555" fill="none" stroke="#334155" stroke-width="1.8" stroke-dasharray="7 5" marker-end="url(#open)"/>
+<text x="775" y="546" text-anchor="middle" font-size="13" fill="#334155" paint-order="stroke" stroke="#ffffff" stroke-width="5" stroke-linejoin="round">pagar</text>
+<path d="M1120,555 L1210,555" fill="none" stroke="#334155" stroke-width="1.8" stroke-dasharray="7 5" marker-end="url(#open)"/>
+<text x="1165" y="546" text-anchor="middle" font-size="13" fill="#334155" paint-order="stroke" stroke="#ffffff" stroke-width="5" stroke-linejoin="round">entrar</text>
+<text x="40" y="740" text-anchor="start" font-size="14" font-weight="400" fill="#475569">⇢  Línea punteada con flecha = el estado crea el siguiente y llama a entrada.cambiarEstado(...)</text>
+<rect x="40" y="640" width="760" height="60" rx="6" fill="#fffbeb" stroke="#b45309" stroke-dasharray="5 4"/>
+<text x="52" y="664" font-size="14" fill="#0f172a" font-family="monospace">// Entrada (contexto): no tiene ningún "if" por estado, solo delega:</text>
+<text x="52" y="685" font-size="14" fill="#0f172a" font-family="monospace">pagar() { return this.estado.pagar(this); }</text>
+<rect x="830" y="640" width="690" height="60" rx="6" fill="#fffbeb" stroke="#b45309" stroke-dasharray="5 4"/>
+<text x="842" y="664" font-size="14" fill="#0f172a" font-family="monospace">// Lo que un estado no sobrescribe cae en la clase base:</text>
+<text x="842" y="685" font-size="14" fill="#0f172a" font-family="monospace">rechazar(accion) → { ok: false, mensaje: "No se puede…" }</text>
+</svg>
