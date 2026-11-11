@@ -1,0 +1,22 @@
+classDiagram
+    direction LR
+    class Contexto {
+        -estado: Estado
+        +cambiarEstado(nuevo: Estado)
+        +operacion()
+    }
+    class Estado {
+        <<interface>>
+        +operacion(contexto: Contexto)
+    }
+    class EstadoConcretoA {
+        +operacion(contexto: Contexto)
+    }
+    class EstadoConcretoB {
+        +operacion(contexto: Contexto)
+    }
+    Contexto o--> Estado : estado actual
+    Estado <|.. EstadoConcretoA
+    Estado <|.. EstadoConcretoB
+    EstadoConcretoA ..> EstadoConcretoB : contexto.cambiarEstado(...)
+    note for Contexto "operacion() { estado.operacion(this) }"

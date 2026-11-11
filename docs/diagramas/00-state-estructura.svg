@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1500 520" width="1500" height="520" font-family="Inter, Segoe UI, Arial, sans-serif"><title>Estructura del patrón State</title><rect width="1500" height="520" fill="#ffffff"/><defs>
+<marker id="tri" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="13" markerHeight="13" orient="auto"><path d="M1,1 L11,6 L1,11 z" fill="#ffffff" stroke="#334155" stroke-width="1.5"/></marker>
+<marker id="open" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="11" markerHeight="11" orient="auto"><path d="M1,1 L11,6 L1,11" fill="none" stroke="#334155" stroke-width="1.8"/></marker>
+<marker id="dia" viewBox="0 0 16 12" refX="1" refY="6" markerWidth="17" markerHeight="13" orient="auto"><path d="M1,6 L8,1 L15,6 L8,11 z" fill="#ffffff" stroke="#334155" stroke-width="1.5"/></marker>
+</defs>
+<rect x="60" y="60" width="420" height="121" rx="6" fill="#ecfdf5" stroke="#047857" stroke-width="2"/>
+<text x="270.0" y="82" text-anchor="middle" font-size="17" font-weight="700" fill="#0f172a">Contexto</text>
+<line x1="60" y1="90" x2="480" y2="90" stroke="#047857" stroke-width="1.5"/>
+<text x="72" y="112" font-size="14" fill="#0f172a" font-family="monospace">-estado: Estado</text>
+<line x1="60" y1="125" x2="480" y2="125" stroke="#047857" stroke-width="1.5"/>
+<text x="72" y="147" font-size="14" fill="#0f172a" font-family="monospace">+operacion()</text>
+<text x="72" y="168" font-size="14" fill="#0f172a" font-family="monospace">+cambiarEstado(nuevo: Estado)</text>
+<rect x="640" y="60" width="400" height="99" rx="6" fill="#eff6ff" stroke="#2563eb" stroke-width="2"/>
+<text x="840.0" y="82" text-anchor="middle" font-size="13" fill="#475569">«interface»</text>
+<text x="840.0" y="102" text-anchor="middle" font-size="17" font-weight="700" fill="#0f172a">Estado</text>
+<line x1="640" y1="110" x2="1040" y2="110" stroke="#2563eb" stroke-width="1.5"/>
+<line x1="640" y1="124" x2="1040" y2="124" stroke="#2563eb" stroke-width="1.5"/>
+<text x="652" y="146" font-size="14" fill="#0f172a" font-family="monospace">+operacion(contexto: Contexto)</text>
+<rect x="440" y="330" width="300" height="79" rx="6" fill="#ffffff" stroke="#64748b" stroke-width="2"/>
+<text x="590.0" y="352" text-anchor="middle" font-size="17" font-weight="700" fill="#0f172a">EstadoConcretoA</text>
+<line x1="440" y1="360" x2="740" y2="360" stroke="#64748b" stroke-width="1.5"/>
+<line x1="440" y1="374" x2="740" y2="374" stroke="#64748b" stroke-width="1.5"/>
+<text x="452" y="396" font-size="14" fill="#0f172a" font-family="monospace">+operacion(contexto)</text>
+<rect x="1000" y="330" width="300" height="79" rx="6" fill="#ffffff" stroke="#64748b" stroke-width="2"/>
+<text x="1150.0" y="352" text-anchor="middle" font-size="17" font-weight="700" fill="#0f172a">EstadoConcretoB</text>
+<line x1="1000" y1="360" x2="1300" y2="360" stroke="#64748b" stroke-width="1.5"/>
+<line x1="1000" y1="374" x2="1300" y2="374" stroke="#64748b" stroke-width="1.5"/>
+<text x="1012" y="396" font-size="14" fill="#0f172a" font-family="monospace">+operacion(contexto)</text>
+<path d="M480,130 L640,130" fill="none" stroke="#334155" stroke-width="1.8" marker-end="url(#open)" marker-start="url(#dia)"/>
+<text x="560" y="120" text-anchor="middle" font-size="13" fill="#334155" paint-order="stroke" stroke="#ffffff" stroke-width="5" stroke-linejoin="round">estado actual</text>
+<path d="M590.0,330 L590.0,280 L780.0,280 L780.0,159" fill="none" stroke="#334155" stroke-width="1.8" stroke-dasharray="7 5" marker-end="url(#tri)"/>
+<path d="M1150.0,330 L1150.0,280 L900.0,280 L900.0,159" fill="none" stroke="#334155" stroke-width="1.8" stroke-dasharray="7 5" marker-end="url(#tri)"/>
+<path d="M740,385 L1000,385" fill="none" stroke="#334155" stroke-width="1.8" stroke-dasharray="7 5" marker-end="url(#open)"/>
+<text x="870" y="375" text-anchor="middle" font-size="13" fill="#334155" paint-order="stroke" stroke="#ffffff" stroke-width="5" stroke-linejoin="round">cambiarEstado(...)</text>
+<rect x="60" y="260" width="420" height="81" rx="6" fill="#fffbeb" stroke="#b45309" stroke-dasharray="5 4"/>
+<text x="72" y="284" font-size="14" fill="#0f172a" font-family="monospace">operacion() {</text>
+<text x="72" y="305" font-size="14" fill="#0f172a" font-family="monospace">  this.estado.operacion(this);</text>
+<text x="72" y="326" font-size="14" fill="#0f172a" font-family="monospace">}  // delega en el estado actual</text>
+</svg>

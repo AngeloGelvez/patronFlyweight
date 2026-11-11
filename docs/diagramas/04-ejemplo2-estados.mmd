@@ -1,0 +1,11 @@
+stateDiagram-v2
+    direction LR
+    [*] --> EnCarrito
+    EnCarrito --> PendienteDePago : confirmar
+    EnCarrito --> Cancelado : cancelar
+    PendienteDePago --> PendienteDePago : pago rechazado (1.º y 2.º)
+    PendienteDePago --> Pagado : pagar
+    PendienteDePago --> Cancelado : cancelar / expirar / 3.er rechazo
+    Pagado --> Reembolsado : reembolsar (≥ 7 días)
+    Cancelado --> [*]
+    Reembolsado --> [*]

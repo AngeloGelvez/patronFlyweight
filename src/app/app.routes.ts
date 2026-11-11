@@ -1,26 +1,21 @@
 import { Routes } from '@angular/router';
 
 export const routes: Routes = [
-  { path: '', pathMatch: 'full', redirectTo: 'patronFlyweight/antes' },
+  { path: '', pathMatch: 'full', redirectTo: 'patronState/simple' },
 
-  // Demostración del patrón Flyweight: el mismo sitio con y sin el patrón.
+  // Ejemplo 1: solo el patrón State.
   {
-    path: 'patronFlyweight/antes',
-    title: 'Boletería · Estadio Metropolitano (sin Flyweight)',
-    loadComponent: () => import('./antes/antes.page').then((m) => m.AntesPage),
-  },
-  {
-    path: 'patronFlyweight/despues',
-    title: 'Boletería · Estadio Metropolitano (con Flyweight)',
-    loadComponent: () => import('./despues/despues.page').then((m) => m.DespuesPage),
+    path: 'patronState/simple',
+    title: 'Patrón State · La entrada · Estadio Metropolitano',
+    loadComponent: () => import('./state-simple/simple.page').then((m) => m.SimplePage),
   },
 
-  // Demostración del patrón Bridge, independiente de la anterior.
+  // Ejemplo 2: State combinado con Observer.
   {
-    path: 'patronBridge',
-    title: 'Patrón Bridge · Estadio Metropolitano',
-    loadComponent: () => import('./bridge/bridge.page').then((m) => m.BridgePage),
+    path: 'patronState/observer',
+    title: 'State + Observer · El pedido · Estadio Metropolitano',
+    loadComponent: () => import('./state-observer/observer.page').then((m) => m.ObserverPage),
   },
 
-  { path: '**', redirectTo: 'patronFlyweight/antes' },
+  { path: '**', redirectTo: 'patronState/simple' },
 ];
