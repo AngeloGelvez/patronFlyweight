@@ -53,6 +53,10 @@ resolución. En GitHub, haz clic en la imagen para verla en grande.
 
 [![Ejemplo 2 · Diagrama de clases](docs/diagramas/03-ejemplo2-clases.svg)](docs/diagramas/03-ejemplo2-clases.svg)
 
+## Diapositivas
+
+Presentación en PDF (16 diapositivas, con los diagramas): [`docs/Patron-State-diapositivas.pdf`](docs/Patron-State-diapositivas.pdf).
+
 ## Tecnologías
 
 Angular 19 (componentes standalone, signals y rutas con carga diferida) y Tailwind CSS 4.
